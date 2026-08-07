@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanuc Helper UA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Fanuc Helper UA</h1>
+    <p class="subtitle">Puma 5100 • Fanuc 32i</p>
+
+    <button onclick="showPage('g71')">
+        G71 / G70<br>
+        <small>Черновая и чистовая обработка</small>
+    </button>
+
+    <button onclick="showPage('g76')">
+        G76<br>
+        <small>Нарезание резьбы</small>
+    </button>
+
+    <button onclick="showPage('turning')">
+        Наружное точение
+    </button>
+
+    <button onclick="showPage('grooving')">
+        Канавки G74 / G75
+    </button>
+
+    <button onclick="showPage('calculator')">
+        Калькуляторы
+    </button>
+
+    <button onclick="showPage('library')">
+        Библиотека программ
+    </button>
+
+    <div id="content">
+        <h2>Добро пожаловать!</h2>
+        <p>
+            Это первая версия Fanuc Helper UA.
+            Здесь будут генераторы программ для Fanuc 32i.
+        </p>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
