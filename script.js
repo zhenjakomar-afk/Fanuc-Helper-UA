@@ -1071,4 +1071,56 @@ function generateProgram() {
 
 /* =========================
    Вывод результата
-==============
+==============/* 
+
+function showResult(program) {
+
+    const result =
+        document.getElementById("result");
+
+    if (!result) {
+        return;
+    }
+
+    result.innerHTML = `
+
+        <h3>Готовая программа</h3>
+
+        <textarea
+            id="programOutput"
+            readonly
+        >${program}</textarea>
+
+        <button onclick="copyProgram()">
+            📋 Копировать программу
+        </button>
+    `;
+}
+
+
+/* =========================
+   Копирование программы
+========================= */
+
+function copyProgram() {
+
+    const output =
+        document.getElementById("programOutput");
+
+    if (!output) {
+        return;
+    }
+
+    output.select();
+
+    navigator.clipboard.writeText(output.value)
+        .then(() => {
+            alert("Программа скопирована.");
+        })
+        .catch(() => {
+            alert(
+                "Не удалось автоматически скопировать. " +
+                "Выделите программу вручную."
+            );
+        });
+}
