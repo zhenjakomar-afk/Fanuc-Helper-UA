@@ -6,44 +6,46 @@
     <title>Fanuc Helper UA</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="container">
 
     <h1>Fanuc Helper UA</h1>
-    <p class="subtitle">Puma 5100 • Fanuc 32i</p>
+    <p class="subtitle">Fanuc 32i • Puma 5100</p>
 
-    <button onclick="showPage('g71')">
-        G71 / G70<br>
-        <small>Черновая и чистовая обработка</small>
-    </button>
+    <div class="menu">
+        <button onclick="showPage('g71')">
+            G71 / G70
+            <small>Черновая и чистовая обработка</small>
+        </button>
 
-    <button onclick="showPage('g76')">
-        G76<br>
-        <small>Нарезание резьбы</small>
-    </button>
+        <button onclick="showPage('g76')">
+            G76
+            <small>Нарезание резьбы</small>
+        </button>
 
-    <button onclick="showPage('turning')">
-        Наружное точение
-    </button>
+        <button onclick="showPage('turning')">
+            Наружное точение
+        </button>
 
-    <button onclick="showPage('grooving')">
-        Канавки G74 / G75
-    </button>
+        <button onclick="showPage('grooving')">
+            Канавки G74 / G75
+        </button>
 
-    <button onclick="showPage('calculator')">
-        Калькуляторы
-    </button>
+        <button onclick="showPage('calculator')">
+            Калькуляторы
+        </button>
 
-    <button onclick="showPage('library')">
-        Библиотека программ
-    </button>
+        <button onclick="showPage('library')">
+            Библиотека программ
+        </button>
+    </div>
 
     <div id="content">
-        <h2>Добро пожаловать!</h2>
+        <h2>Fanuc Helper UA</h2>
         <p>
-            Это первая версия Fanuc Helper UA.
-            Здесь будут генераторы программ для Fanuc 32i.
+            Выберите необходимый цикл или инструмент.
         </p>
     </div>
 
