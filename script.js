@@ -736,7 +736,7 @@ function generateProgram() {
         }
 
     });
-
+    program += "M30;\n";
 
    
 
