@@ -1,4 +1,5 @@
 let cycles = [];
+let operations = [];
 
 
 /* =========================
@@ -26,12 +27,13 @@ function showPage(page) {
 
 
 /* =========================
-   Создание редактора G71
+   Редактор G71 / G70
 ========================= */
 
 function showG71() {
 
     cycles = [];
+    operations = [];
 
     const content = document.getElementById("content");
 
@@ -46,28 +48,19 @@ function showG71() {
                type="number"
                value="1001">
 
-        <label>Инструмент</label>
-        <input id="tool"
-               type="text"
-               value="T303">
+        <h3>Операции</h3>
 
-        <label>Максимальные обороты S</label>
-        <input id="maxRpm"
-               type="number"
-               value="1500">
-
-        <label>Скорость резания G96 S</label>
-        <input id="cuttingSpeed"
-               type="number"
-               value="110">
-
-        <h3>Циклы программы</h3>
-
-        <div id="cycles"></div>
+        <div id="operations"></div>
 
         <button onclick="addG71Cycle()">
             + Добавить G71
         </button>
+
+        <button onclick="addG70Operation()">
+            + Добавить G70
+        </button>
+
+        <br><br>
 
         <button onclick="generateProgram()">
             СОЗДАТЬ ПРОГРАММУ
@@ -86,106 +79,320 @@ function showG71() {
 
 function addG71Cycle() {
 
-    const cycleNumber = cycles.length + 1;
+    const id = Date.now() + Math.random();
 
     const cycle = {
-        id: cycleNumber,
+        id: id,
+        type: "G71",
         points: []
     };
 
     cycles.push(cycle);
+    operations.push(cycle);
 
-    renderCycles();
+    renderOperations();
 }
 
 
 /* =========================
-   Отрисовка всех циклов
+   Добавление G70
 ========================= */
 
-function renderCycles() {
+function addG70Operation() {
+
+    const id = Date.now() + Math.random();
+
+    const operation = {
+        id: id,
+        type: "G70",
+        contour: ""
+    };
+
+    operations.push(operation);
+
+    renderOperations();
+}
+
+
+/* =========================
+   Отрисовка операций
+========================= */
+
+function renderOperations() {
 
     const container =
-        document.getElementById("cycles");
+        document.getElementById("operations");
+
+    if (!container) {
+        return;
+    }
 
     container.innerHTML = "";
 
-    cycles.forEach((cycle, cycleIndex) => {
+    operations.forEach((operation, index) => {
 
-        const block =
-            document.createElement("div");
-
-        block.className = "cycle";
-
-        block.innerHTML = `
-
-            <h3>
-                G71 №${cycleIndex + 1}
-            </h3>
-
-            <label>Глубина резания U</label>
-            <input
-                type="number"
-                step="0.1"
-                value="2"
-                id="depth_${cycle.id}"
-            >
-
-            <label>Отвод R</label>
-            <input
-                type="number"
-                step="0.1"
-                value="0.5"
-                id="retract_${cycle.id}"
-            >
-
-            <label>Припуск по X — U</label>
-            <input
-                type="number"
-                step="0.1"
-                value="1"
-                id="allowanceX_${cycle.id}"
-            >
-
-            <label>Припуск по Z — W</label>
-            <input
-                type="number"
-                step="0.1"
-                value="0.1"
-                id="allowanceZ_${cycle.id}"
-            >
-
-            <label>Подача F</label>
-            <input
-                type="number"
-                step="0.01"
-                value="0.22"
-                id="feed_${cycle.id}"
-            >
-
-            <h4>Контур</h4>
-
-            <div id="points_${cycle.id}"></div>
-
-            <button onclick="addPoint(${cycle.id})">
-                + Добавить точку
-            </button>
-
-            <button onclick="removeCycle(${cycle.id})">
-                Удалить этот G71
-            </button>
-        `;
-
-        container.appendChild(block);
-
-        if (cycle.points.length === 0) {
-            addPoint(cycle.id);
-            addPoint(cycle.id);
+        if (operation.type === "G71") {
+            renderG71(operation, index);
         }
-        else {
-            renderPoints(cycle.id);
+
+        if (operation.type === "G70") {
+            renderG70(operation, index);
         }
     });
+}
+
+
+/* =========================
+   Отрисовка G71
+========================= */
+
+function renderG71(cycle, index) {
+
+    const container =
+        document.getElementById("operations");
+
+    const block =
+        document.createElement("div");
+
+    block.className = "cycle";
+
+    block.innerHTML = `
+
+        <hr>
+
+        <h3>G71 №${index + 1}</h3>
+
+        <label>Инструмент</label>
+        <input
+            type="text"
+            id="tool_${cycle.id}"
+            value="T303"
+        >
+
+        <label>Максимальные обороты S</label>
+        <input
+            type="number"
+            id="maxRpm_${cycle.id}"
+            value="1500"
+        >
+
+        <label>Скорость резания G96 S</label>
+        <input
+            type="number"
+            id="cuttingSpeed_${cycle.id}"
+            value="110"
+        >
+
+        <h4>Подвод инструмента</h4>
+
+        <label>Подвод по Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachZ_${cycle.id}"
+            value="2"
+        >
+
+        <label>Подвод по X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachX_${cycle.id}"
+            value="102"
+        >
+
+        <h4>Коррекция радиуса пластины</h4>
+
+        <label>Коррекция</label>
+        <select id="correction_${cycle.id}">
+            <option value="">Без коррекции</option>
+            <option value="G41">G41</option>
+            <option value="G42">G42</option>
+        </select>
+
+        <h4>Параметры G71</h4>
+
+        <label>Глубина резания U</label>
+        <input
+            type="number"
+            step="0.001"
+            id="depth_${cycle.id}"
+            value="2"
+        >
+
+        <label>Отвод R</label>
+        <input
+            type="number"
+            step="0.001"
+            id="retract_${cycle.id}"
+            value="0.5"
+        >
+
+        <label>Припуск по X — U</label>
+        <input
+            type="number"
+            step="0.001"
+            id="allowanceX_${cycle.id}"
+            value="1"
+        >
+
+        <label>Припуск по Z — W</label>
+        <input
+            type="number"
+            step="0.001"
+            id="allowanceZ_${cycle.id}"
+            value="0.1"
+        >
+
+        <label>Подача F</label>
+        <input
+            type="number"
+            step="0.001"
+            id="feed_${cycle.id}"
+            value="0.22"
+        >
+
+        <h4>Контур</h4>
+
+        <div id="points_${cycle.id}"></div>
+
+        <button onclick="addPoint(${cycle.id})">
+            + Добавить точку
+        </button>
+
+        <button onclick="removeOperation(${cycle.id})">
+            Удалить этот G71
+        </button>
+    `;
+
+    container.appendChild(block);
+
+    if (cycle.points.length === 0) {
+        addPoint(cycle.id);
+        addPoint(cycle.id);
+    }
+    else {
+        renderPoints(cycle.id);
+    }
+}
+
+
+/* =========================
+   Отрисовка G70
+========================= */
+
+function renderG70(operation, index) {
+
+    const container =
+        document.getElementById("operations");
+
+    const block =
+        document.createElement("div");
+
+    block.className = "cycle";
+
+    block.innerHTML = `
+
+        <hr>
+
+        <h3>G70 №${index + 1}</h3>
+
+        <label>Инструмент</label>
+        <input
+            type="text"
+            id="tool_${operation.id}"
+            value="T101"
+        >
+
+        <label>Максимальные обороты S</label>
+        <input
+            type="number"
+            id="maxRpm_${operation.id}"
+            value="1500"
+        >
+
+        <label>Скорость резания G96 S</label>
+        <input
+            type="number"
+            id="cuttingSpeed_${operation.id}"
+            value="180"
+        >
+
+        <h4>Подвод инструмента</h4>
+
+        <label>Подвод по Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachZ_${operation.id}"
+            value="2"
+        >
+
+        <label>Подвод по X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachX_${operation.id}"
+            value="102"
+        >
+
+        <h4>Коррекция радиуса пластины</h4>
+
+        <label>Коррекция</label>
+        <select id="correction_${operation.id}">
+            <option value="">Без коррекции</option>
+            <option value="G41">G41</option>
+            <option value="G42">G42</option>
+        </select>
+
+        <h4>Контур для чистовой обработки</h4>
+
+        <label>P/Q</label>
+        <select id="contour_${operation.id}">
+            ${getContourOptions()}
+        </select>
+
+        <label>Подача F</label>
+        <input
+            type="number"
+            step="0.001"
+            id="feed_${operation.id}"
+            value="0.1"
+        >
+
+        <br><br>
+
+        <button onclick="removeOperation(${operation.id})">
+            Удалить этот G70
+        </button>
+    `;
+
+    container.appendChild(block);
+}
+
+
+/* =========================
+   Список контуров
+========================= */
+
+function getContourOptions() {
+
+    const g71s =
+        cycles.filter(c => c.type === "G71");
+
+    if (g71s.length === 0) {
+        return `<option value="">Нет контуров</option>`;
+    }
+
+    return g71s.map((cycle, index) => {
+
+        return `
+            <option value="${cycle.id}">
+                Контур G71 №${index + 1}
+            </option>
+        `;
+
+    }).join("");
 }
 
 
@@ -197,6 +404,10 @@ function addPoint(cycleId) {
 
     const cycle =
         cycles.find(c => c.id === cycleId);
+
+    if (!cycle) {
+        return;
+    }
 
     cycle.points.push({
         motion: "G01",
@@ -277,6 +488,7 @@ function renderPoints(cycleId) {
                     ${index},
                     this.value
                 )"
+
             >
 
             <button
@@ -300,28 +512,28 @@ function renderPoints(cycleId) {
 
 function changeMotion(cycleId, index, value) {
 
-    cycles
-        .find(c => c.id === cycleId)
-        .points[index]
-        .motion = value;
+    const cycle =
+        cycles.find(c => c.id === cycleId);
+
+    cycle.points[index].motion = value;
 }
 
 
 function changeX(cycleId, index, value) {
 
-    cycles
-        .find(c => c.id === cycleId)
-        .points[index]
-        .x = value;
+    const cycle =
+        cycles.find(c => c.id === cycleId);
+
+    cycle.points[index].x = value;
 }
 
 
 function changeZ(cycleId, index, value) {
 
-    cycles
-        .find(c => c.id === cycleId)
-        .points[index]
-        .z = value;
+    const cycle =
+        cycles.find(c => c.id === cycleId);
+
+    cycle.points[index].z = value;
 }
 
 
@@ -335,7 +547,11 @@ function removePoint(cycleId, index) {
         cycles.find(c => c.id === cycleId);
 
     if (cycle.points.length <= 2) {
-        alert("В контуре должно быть минимум две точки.");
+
+        alert(
+            "В контуре должно быть минимум две точки."
+        );
+
         return;
     }
 
@@ -346,63 +562,61 @@ function removePoint(cycleId, index) {
 
 
 /* =========================
-   Удаление цикла
+   Удаление операции
 ========================= */
 
-function removeCycle(cycleId) {
+function removeOperation(id) {
 
-    if (cycles.length <= 1) {
-        alert("В программе должен остаться хотя бы один цикл.");
+    if (operations.length <= 1) {
+
+        alert(
+            "В программе должна остаться хотя бы одна операция."
+        );
+
         return;
     }
 
+    operations =
+        operations.filter(operation =>
+            operation.id !== id
+        );
+
     cycles =
-        cycles.filter(c => c.id !== cycleId);
+        cycles.filter(cycle =>
+            cycle.id !== id
+        );
 
-    cycles.forEach((cycle, index) => {
-        cycle.id = index + 1;
-    });
-
-    renderCycles();
+    renderOperations();
 }
 
 
 /* =========================
-   Формат координат
+   Формат чисел
 ========================= */
+
+/*
+   X, Z, U, W, R:
+
+   2      -> 2.
+   2.0    -> 2.
+   0.5    -> 0.5
+   -20    -> -20.
+   -20.5  -> -20.5
+
+   S:
+
+   1500 -> 1500
+   110  -> 110
+*/
+
 
 function formatCoordinate(value) {
 
-    if (value === "" || value === null) {
-        return "";
-    }
-
-    let number = Number(value);
-
-    if (Number.isNaN(number)) {
-        return "";
-    }
-
-    /*
-       X и Z всегда получают
-       десятичную точку.
-    */
-
-    if (Number.isInteger(number)) {
-        return number.toFixed(1);
-    }
-
-    return number.toString();
-}
-
-
-/* =========================
-   Формат U/W/R
-========================= */
-
-function formatDistance(value) {
-
-    if (value === "" || value === null) {
+    if (
+        value === "" ||
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
@@ -413,10 +627,33 @@ function formatDistance(value) {
     }
 
     if (Number.isInteger(number)) {
-        return number.toFixed(1);
+        return number.toFixed(0) + ".";
     }
 
-    return number.toString();
+    return String(number);
+}
+
+
+function formatDistance(value) {
+
+    return formatCoordinate(value);
+}
+
+
+/* =========================
+   Получение значения поля
+========================= */
+
+function getValue(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+        return "";
+    }
+
+    return element.value;
 }
 
 
@@ -427,95 +664,174 @@ function formatDistance(value) {
 function generateProgram() {
 
     const programNumber =
-        document.getElementById("programNumber").value;
-
-    const tool =
-        document.getElementById("tool").value;
-
-    const maxRpm =
-        document.getElementById("maxRpm").value;
-
-    const cuttingSpeed =
-        document.getElementById("cuttingSpeed").value;
-
+        getValue("programNumber");
 
     let program = "";
 
     program += `O${programNumber};\n`;
-    program += `${tool};\n`;
-    program += `G90G54;\n`;
-    program += `G50S${maxRpm};\n`;
-    program += `G96S${cuttingSpeed}M03;\n`;
 
 
     /*
-       Общий счётчик P/Q/N.
+       Каждому G71 назначаем
+       уникальную пару P/Q.
 
-       Каждый новый контур получает
-       новую пару номеров.
+       N также считается глобально.
     */
 
-    let nextNumber = 1;
+    let nextPQ = 1;
+    let nextN = 1;
 
 
-    cycles.forEach((cycle) => {
+    /*
+       Сначала определяем номера контуров.
+    */
+
+    const contourMap = new Map();
+
+    cycles.forEach(cycle => {
+
+        const pNumber = nextPQ;
+        const qNumber = nextPQ + 1;
+
+        nextPQ += 2;
+
+        contourMap.set(
+            cycle.id,
+            {
+                p: pNumber,
+                q: qNumber
+            }
+        );
+    });
+
+
+    /*
+       Генерируем операции
+       в том порядке, в котором
+       они находятся на странице.
+    */
+
+    operations.forEach(operation => {
+
+        if (operation.type === "G71") {
+
+            const numbers =
+                contourMap.get(operation.id);
+
+            if (!numbers) {
+                return;
+            }
+
+            generateG71(
+                operation,
+                numbers.p,
+                numbers.q
+            );
+        }
+
+
+        if (operation.type === "G70") {
+
+            generateG70(operation);
+        }
+
+    });
+
+
+    /*
+       Завершение программы.
+    */
+
+    program += "M09;\n";
+    program += "M05;\n";
+    program += "G00G28U0W0;\n";
+    program += "M01;";
+
+
+    showResult(program);
+
+
+    /*
+       Вложенная функция генерации G71.
+    */
+
+    function generateG71(
+        cycle,
+        pNumber,
+        qNumber
+    ) {
 
         if (cycle.points.length < 2) {
             return;
         }
 
 
-        const pNumber = nextNumber;
-        const qNumber = nextNumber + 1;
+        const tool =
+            getValue(`tool_${cycle.id}`);
 
-        nextNumber += 2;
+        const maxRpm =
+            getValue(`maxRpm_${cycle.id}`);
 
+        const cuttingSpeed =
+            getValue(`cuttingSpeed_${cycle.id}`);
+
+        const approachZ =
+            formatCoordinate(
+                getValue(`approachZ_${cycle.id}`)
+            );
+
+        const approachX =
+            formatCoordinate(
+                getValue(`approachX_${cycle.id}`)
+            );
+
+        const correction =
+            getValue(`correction_${cycle.id}`);
 
         const depth =
             formatDistance(
-                document.getElementById(
-                    `depth_${cycle.id}`
-                ).value
+                getValue(`depth_${cycle.id}`)
             );
 
         const retract =
             formatDistance(
-                document.getElementById(
-                    `retract_${cycle.id}`
-                ).value
+                getValue(`retract_${cycle.id}`)
             );
 
         const allowanceX =
             formatDistance(
-                document.getElementById(
-                    `allowanceX_${cycle.id}`
-                ).value
+                getValue(`allowanceX_${cycle.id}`)
             );
 
         const allowanceZ =
             formatDistance(
-                document.getElementById(
-                    `allowanceZ_${cycle.id}`
-                ).value
+                getValue(`allowanceZ_${cycle.id}`)
             );
 
         const feed =
-            document.getElementById(
-                `feed_${cycle.id}`
-            ).value;
+            getValue(`feed_${cycle.id}`);
 
 
-        /*
-           Первый блок G71
-        */
+        program += `${tool};\n`;
+        program += `G90G54;\n`;
+        program += `G50S${maxRpm};\n`;
+        program += `G96S${cuttingSpeed}M03;\n`;
+
+        program +=
+            `G00Z${approachZ};\n`;
+
+        program +=
+            `G00X${approachX}`;
+
+        if (correction !== "") {
+            program += correction;
+        }
+
+        program += "M08;\n";
+
 
         program +=
             `G71U${depth}R${retract};\n`;
-
-
-        /*
-           Второй блок G71
-        */
 
         program +=
             `G71P${pNumber}Q${qNumber}` +
@@ -525,23 +841,29 @@ function generateProgram() {
 
 
         /*
-           Начало контура.
+           Контур.
 
-           P указывает на N первого блока.
+           P ставится на первой строке.
+           Q ставится на последней.
         */
 
         const firstPoint =
             cycle.points[0];
 
         let firstLine =
-            `G00N${pNumber}`;
+            `G00N${nextN}`;
+
+        nextN++;
+
 
         if (firstPoint.x !== "") {
+
             firstLine +=
                 `X${formatCoordinate(firstPoint.x)}`;
         }
 
         if (firstPoint.z !== "") {
+
             firstLine +=
                 `Z${formatCoordinate(firstPoint.z)}`;
         }
@@ -550,35 +872,29 @@ function generateProgram() {
 
 
         /*
-           Остальные точки.
+           Все промежуточные точки.
         */
 
         for (
             let i = 1;
-            i < cycle.points.length;
+            i < cycle.points.length - 1;
             i++
         ) {
 
             const point =
                 cycle.points[i];
 
-            /*
-               Последняя точка получает N=Q.
-            */
-
-            let line = point.motion;
-
-            if (i === cycle.points.length - 1) {
-                line += `N${qNumber}`;
-            }
-
+            let line =
+                point.motion;
 
             if (point.x !== "") {
+
                 line +=
                     `X${formatCoordinate(point.x)}`;
             }
 
             if (point.z !== "") {
+
                 line +=
                     `Z${formatCoordinate(point.z)}`;
             }
@@ -588,73 +904,171 @@ function generateProgram() {
 
 
         /*
-           Чистовая обработка G70
+           Последняя точка.
         */
 
-        program +=
-            `G70P${pNumber}Q${qNumber};\n`;
-    });
+        const lastPoint =
+            cycle.points[
+                cycle.points.length - 1
+            ];
+
+        let lastLine =
+            `G01N${nextN}`;
+
+        nextN++;
+
+
+        if (lastPoint.x !== "") {
+
+            lastLine +=
+                `X${formatCoordinate(lastPoint.x)}`;
+        }
+
+        if (lastPoint.z !== "") {
+
+            lastLine +=
+                `Z${formatCoordinate(lastPoint.z)}`;
+        }
+
+        program += lastLine + ";\n";
+
+
+        /*
+           Если включена коррекция,
+           обязательно отменяем G41/G42.
+        */
+
+        if (correction !== "") {
+
+            program +=
+                `G00Z${approachZ}.`.replace(
+                    "..",
+                    "."
+                ) +
+                "G40;\n";
+        }
+    }
 
 
     /*
-       Завершение программы.
+       Генерация G70.
     */
 
-    program += "G00Z10.;\n";
-    program += "M09;\n";
-    program += "M05;\n";
-    program += "G00G28U0W0;\n";
-    program += "M01;";
+    function generateG70(operation) {
+
+        const contourId =
+            getValue(
+                `contour_${operation.id}`
+            );
+
+        if (!contourId) {
+            return;
+        }
+
+        const numbers =
+            contourMap.get(
+                Number(contourId)
+            );
+
+        /*
+           Date.now() создаёт число.
+           Значение select может храниться
+           как строка, поэтому проверяем также
+           строковый вариант.
+        */
+
+        let contourNumbers = numbers;
+
+        if (!contourNumbers) {
+
+            contourNumbers =
+                contourMap.get(contourId);
+        }
+
+        if (!contourNumbers) {
+            return;
+        }
 
 
-    showResult(program);
+        const tool =
+            getValue(`tool_${operation.id}`);
+
+        const maxRpm =
+            getValue(`maxRpm_${operation.id}`);
+
+        const cuttingSpeed =
+            getValue(
+                `cuttingSpeed_${operation.id}`
+            );
+
+        const approachZ =
+            formatCoordinate(
+                getValue(
+                    `approachZ_${operation.id}`
+                )
+            );
+
+        const approachX =
+            formatCoordinate(
+                getValue(
+                    `approachX_${operation.id}`
+                )
+            );
+
+        const correction =
+            getValue(
+                `correction_${operation.id}`
+            );
+
+        const feed =
+            getValue(
+                `feed_${operation.id}`
+            );
+
+
+        program += `${tool};\n`;
+        program += `G90G54;\n`;
+        program += `G50S${maxRpm};\n`;
+        program += `G96S${cuttingSpeed}M03;\n`;
+
+        program +=
+            `G00Z${approachZ};\n`;
+
+        program +=
+            `G00X${approachX}`;
+
+        if (correction !== "") {
+            program += correction;
+        }
+
+        program += "M08;\n";
+
+
+        program +=
+            `G70P${contourNumbers.p}` +
+            `Q${contourNumbers.q}` +
+            `F${feed};\n`;
+
+
+        /*
+           После G70 отход.
+
+           Если G41/G42 были включены,
+           G40 обязателен.
+        */
+
+        program +=
+            `G00Z10.`;
+
+        if (correction !== "") {
+            program += "G40";
+        }
+
+        program += ";\n";
+    }
 }
 
 
 /* =========================
    Вывод результата
-========================= */
-
-function showResult(program) {
-
-    const result =
-        document.getElementById("result");
-
-    result.innerHTML = `
-
-        <h3>Готовая программа</h3>
-
-        <textarea
-            id="programOutput"
-            readonly
-        >${program}</textarea>
-
-        <button onclick="copyProgram()">
-            📋 Копировать программу
-        </button>
-    `;
-}
-
-
-/* =========================
-   Копирование
-========================= */
-
-function copyProgram() {
-
-    const output =
-        document.getElementById("programOutput");
-
-    output.select();
-
-    navigator.clipboard.writeText(output.value)
-        .then(() => {
-            alert("Программа скопирована.");
-        })
-        .catch(() => {
-            alert(
-                "Не удалось автоматически скопировать. " +
-                "Выделите программу вручную."
-            );
-        });
-                        }
+==============
