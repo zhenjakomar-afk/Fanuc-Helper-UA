@@ -711,7 +711,7 @@ function generateProgram() {
        они находятся на странице.
     */
 
-    operations.forEach(operation => {
+    operations.forEach((operation, operationIndex) => {
 
         if (operation.type === "G71") {
 
@@ -738,14 +738,7 @@ function generateProgram() {
     });
 
 
-    /*
-       Завершение программы.
-    */
-
-    program += "M09;\n";
-    program += "M05;\n";
-    program += "G00G28U0W0;\n";
-    program += "M01;";
+   
 
 
     showResult(program);
@@ -938,15 +931,15 @@ function generateProgram() {
            обязательно отменяем G41/G42.
         */
 
-        if (correction !== "") {
+        program += "G00Z10.;\n";
 
-            program +=
-                `G00Z${approachZ}.`.replace(
-                    "..",
-                    "."
-                ) +
-                "G40;\n";
-        }
+if (correction !== "") {
+    program += "G40;\n";
+}
+
+program += "M09;\n";
+program += "M05;\n";
+program += "G00G28U0W0;\n";
     }
 
 
@@ -1057,14 +1050,15 @@ function generateProgram() {
            G40 обязателен.
         */
 
-        program +=
-            `G00Z10.`;
+      program += "G00Z10.;\n";
 
-        if (correction !== "") {
-            program += "G40";
-        }
+if (correction !== "") {
+    program += "G40;\n";
+}
 
-        program += ";\n";
+program += "M09;\n";
+program += "M05;\n";
+program += "G00G28U0W0;\n";
     }
 }
 
