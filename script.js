@@ -1071,7 +1071,7 @@ function generateProgram() {
 
 /* =========================
    Вывод результата
-==============/* 
+========================= */
 
 function showResult(program) {
 
@@ -1083,7 +1083,6 @@ function showResult(program) {
     }
 
     result.innerHTML = `
-
         <h3>Готовая программа</h3>
 
         <textarea
