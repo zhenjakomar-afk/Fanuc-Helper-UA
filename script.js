@@ -59,7 +59,9 @@ function showG71() {
         <button onclick="addG70Operation()">
             + Добавить G70
         </button>
-
+<button onclick="addG75Operation()">
+    + Добавить G75
+</button>
         <br><br>
 
         <button onclick="generateProgram()">
@@ -112,7 +114,23 @@ function addG70Operation() {
 
     renderOperations();
 }
+/* =========================
+   Добавление G75
+========================= */
 
+function addG75Operation() {
+
+    const id = Date.now() + Math.random();
+
+    const operation = {
+        id: id,
+        type: "G75"
+    };
+
+    operations.push(operation);
+
+    renderOperations();
+}
 
 /* =========================
    Отрисовка операций
@@ -137,6 +155,9 @@ function renderOperations() {
 
         if (operation.type === "G70") {
             renderG70(operation, index);
+        }
+        if (operation.type === "G75") {
+    renderG75(operation, index);
         }
     });
 }
@@ -369,7 +390,145 @@ function renderG70(operation, index) {
 
     container.appendChild(block);
 }
+/* =========================
+   Отрисовка G75
+========================= */
 
+function renderG75(operation, index) {
+
+    const container =
+        document.getElementById("operations");
+
+    const block =
+        document.createElement("div");
+
+    block.className = "cycle";
+
+    block.innerHTML = `
+
+        <hr>
+
+        <h3>G75 №${index + 1}</h3>
+
+        <label>Инструмент</label>
+        <input
+            type="text"
+            id="tool_${operation.id}"
+            value="T202"
+        >
+
+        <label>Максимальные обороты S</label>
+        <input
+            type="number"
+            id="maxRpm_${operation.id}"
+            value="1500"
+        >
+
+        <label>Скорость резания G96 S</label>
+        <input
+            type="number"
+            id="cuttingSpeed_${operation.id}"
+            value="100"
+        >
+
+        <h4>Параметры пластины</h4>
+
+        <label>Ширина пластины, мм</label>
+        <input
+            type="number"
+            step="0.1"
+            id="insertWidth_${operation.id}"
+            value="4"
+        >
+
+        <h4>Исходная точка</h4>
+
+        <label>Исходный X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="startX_${operation.id}"
+            value="41"
+        >
+
+        <label>Исходный Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="startZ_${operation.id}"
+            value="-21.1"
+        >
+
+        <h4>Конечная точка</h4>
+
+        <label>Конечный X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="endX_${operation.id}"
+            value="29.9"
+        >
+
+        <label>Конечный Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="endZ_${operation.id}"
+            value="-11.6"
+        >
+
+        <h4>Параметры G75</h4>
+
+        <label>Глубина врезания P, мм</label>
+        <input
+            type="number"
+            step="0.001"
+            id="depthP_${operation.id}"
+            value="5"
+        >
+
+        <label>Q — отступ между врезаниями</label>
+        <input
+            type="text"
+            id="stepQ_${operation.id}"
+            value="3500"
+            readonly
+        >
+
+        <label>Подача F</label>
+        <input
+            type="number"
+            step="0.001"
+            id="feed_${operation.id}"
+            value="0.05"
+        >
+
+        <br><br>
+
+        <button onclick="removeOperation(${operation.id})">
+            Удалить этот G75
+        </button>
+    `;
+
+    container.appendChild(block);
+
+    updateG75Q(operation.id);
+
+    const widthInput =
+        document.getElementById(
+            `insertWidth_${operation.id}`
+        );
+
+    if (widthInput) {
+
+        widthInput.addEventListener(
+            "input",
+            function () {
+                updateG75Q(operation.id);
+            }
+        );
+    }
+}
 
 /* =========================
    Список контуров
