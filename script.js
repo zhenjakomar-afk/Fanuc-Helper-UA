@@ -5,13 +5,17 @@ let operations = [];
 /* =========================
    Главное меню
 ========================= */
-
 function showPage(page) {
 
     const content = document.getElementById("content");
 
     if (page === "g71") {
         showG71();
+        return;
+    }
+
+    if (page === "grooving") {
+        showGrooving();
         return;
     }
 
@@ -22,8 +26,257 @@ function showPage(page) {
         <button onclick="showPage('g71')">
             G71 / G70
         </button>
+
+        <br><br>
+
+        <button onclick="showPage('grooving')">
+            Канавки G74 / G75
+        </button>
     `;
 }
+    function showGrooving() {
+
+    const content = document.getElementById("content");
+
+    content.innerHTML = `
+        <h2>КАНАВКИ G74 / G75</h2>
+<label>Тип канавки:</label>
+<select id="grooveType">
+    <option value="G75">G75 — продольная</option>
+    <option value="G74">G74 — торцевая</option>
+</select>
+        <div class="cycle">
+
+            <h3>Общие параметры инструмента</h3>
+
+            <label>Номер инструмента:</label>
+            <input type="number" id="grooveTool" value="303">
+
+            <label>Обороты шпинделя S:</label>
+            <input type="number" id="grooveS" value="1500">
+
+            <label>Скорость резания G96:</label>
+            <input type="number" id="grooveSpeed" value="110">
+
+            <label>Ширина пластины, мм:</label>
+            <input type="number" id="grooveWidth" value="4" step="0.1">
+
+            <label>Подача F:</label>
+            <input type="number" id="grooveF" value="0.05" step="0.01">
+
+            <hr>
+
+            <h3>G75 — продольная канавка</h3>
+
+            <label>Стартовый X:</label>
+            <input type="number" id="g75StartX" value="41" step="0.1">
+
+            <label>Стартовый Z:</label>
+            <input type="number" id="g75StartZ" value="-21.1" step="0.1">
+
+            <label>Конечный X:</label>
+            <input type="number" id="g75EndX" value="29.9" step="0.1">
+
+            <label>Конечный Z:</label>
+            <input type="number" id="g75EndZ" value="-11.6" step="0.1">
+
+            <label>P — глубина врезания за проход, мкм:</label>
+            <input type="number" id="g75P" value="5000">
+
+            <label>Q — отступ между врезаниями, мкм:</label>
+            <input type="text" id="g75Q" readonly>
+
+            <hr>
+
+            <h3>G74 — торцевая канавка</h3>
+
+            <label>Стартовый X:</label>
+            <input type="number" id="g74StartX" value="48" step="0.1">
+
+            <label>Стартовый Z:</label>
+            <input type="number" id="g74StartZ" value="2" step="0.1">
+
+            <label>Конечный X:</label>
+            <input type="number" id="g74EndX" value="40" step="0.1">
+
+            <label>Глубина по Z, мм:</label>
+            <input type="number" id="g74DepthZ" value="5" step="0.1">
+
+            <label>Q — глубина врезания, мкм:</label>
+            <input type="number" id="g74Q" value="5000">
+
+            <label>P — отступ между врезаниями, мкм:</label>
+            <input type="text" id="g74P" readonly>
+
+            <br><br>
+
+            <button onclick="generateGrooving()">
+                СОЗДАТЬ ПРОГРАММУ
+            </button>
+
+            <br><br>
+
+            <div id="groovingResult"></div>
+
+            <br>
+
+            <button onclick="showPage('home')">
+                НАЗАД
+            </button>
+
+        </div>
+    `;
+
+    updateGroovingCalculations();
+function generateGrooving() {
+
+    const type =
+        document.getElementById("grooveType").value;
+
+    const tool =
+        document.getElementById("grooveTool").value;
+
+    const s =
+        document.getElementById("grooveS").value;
+
+    const speed =
+        document.getElementById("grooveSpeed").value;
+
+    const width =
+        parseFloat(document.getElementById("grooveWidth").value) || 0;
+
+    const feed =
+        document.getElementById("grooveF").value;
+
+
+    // =====================================
+    // G75 — ПРОДОЛЬНАЯ КАНАВКА
+    // =====================================
+
+    if (type === "G75") {
+
+        const startX =
+            document.getElementById("g75StartX").value;
+
+        const startZ =
+            document.getElementById("g75StartZ").value;
+
+        const endX =
+            document.getElementById("g75EndX").value;
+
+        const endZ =
+            document.getElementById("g75EndZ").value;
+
+        const p =
+            document.getElementById("g75P").value;
+
+        const q =
+            Math.round((width - 0.5) * 1000);
+
+
+        const program =
+`T${tool};
+G90G54;
+G50S1500;
+G96S${speed}M03;
+G00Z${startZ};
+G00X${startX}M08;
+G75R0.5;
+G75X${endX}Z${endZ}P${p}Q${q}F${feed};
+G00Z10.;
+M09;
+M05;
+G00G28U0W0;`;
+
+        document.getElementById("groovingResult").innerHTML =
+            `<pre>${program}</pre>`;
+
+        return;
+    }
+
+
+    // =====================================
+    // G74 — ТОРЦЕВАЯ КАНАВКА
+    // =====================================
+
+    if (type === "G74") {
+
+        const startX =
+            document.getElementById("g74StartX").value;
+
+        const startZ =
+            document.getElementById("g74StartZ").value;
+
+        const endX =
+            document.getElementById("g74EndX").value;
+
+        const depthZ =
+            document.getElementById("g74DepthZ").value;
+
+        const q =
+            document.getElementById("g74Q").value;
+
+        const p =
+            Math.round((width * 2 - 0.5) * 1000);
+
+
+        const program =
+`T${tool};
+G90G54;
+G50S1500;
+G96S${speed}M03;
+G00Z${startZ};
+G00X${startX}M08;
+G74R0.5;
+G74X${endX}Z${depthZ}P${p}Q${q}F${feed};
+G00Z10.;
+M09;
+M05;
+G00G28U0W0;`;
+
+        document.getElementById("groovingResult").innerHTML =
+            `<pre>${program}</pre>`;
+
+        return;
+    }
+}
+    document.getElementById("grooveWidth")
+        .addEventListener("input", updateGroovingCalculations);
+}function updateGroovingCalculations() {
+
+    const widthInput =
+        document.getElementById("grooveWidth");
+
+    if (!widthInput) {
+        return;
+    }
+
+    const width =
+        parseFloat(widthInput.value) || 0;
+
+    // =========================
+    // G75
+    // Q = ширина пластины - 0.5 мм
+    // =========================
+
+    const g75Q =
+        Math.max(0, width - 0.5);
+
+    document.getElementById("g75Q").value =
+        Math.round(g75Q * 1000);
+
+
+    // =========================
+    // G74
+    // P = две ширины пластины - 0.5 мм
+    // =========================
+
+    const g74P =
+        Math.max(0, (width * 2) - 0.5);
+
+    document.getElementById("g74P").value =
+        Math.round(g74P * 1000);
+    }
 
 
 /* =========================
