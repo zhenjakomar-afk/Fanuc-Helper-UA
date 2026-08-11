@@ -189,8 +189,13 @@ M09;
 M05;
 G00G28U0W0;`;
 
-        document.getElementById("groovingResult").innerHTML =
-            `<pre>${program}</pre>`;
+        document.getElementById("groovingResult").innerHTML = `
+    <pre id="groovingProgram">${program}</pre>
+
+    <button onclick="copyGroovingProgram()">
+        📋 Копировать программу
+    </button>
+`;
 
         return;
     }
@@ -235,8 +240,13 @@ M09;
 M05;
 G00G28U0W0;`;
 
-        document.getElementById("groovingResult").innerHTML =
-            `<pre>${program}</pre>`;
+        document.getElementById("groovingResult").innerHTML = `
+    <pre id="groovingProgram">${program}</pre>
+
+    <button onclick="copyGroovingProgram()">
+        📋 Копировать программу
+    </button>
+`;
 
         return;
     }
