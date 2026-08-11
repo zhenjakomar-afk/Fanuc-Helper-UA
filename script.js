@@ -126,7 +126,7 @@ function showPage(page) {
 
         </div>
     `;
-
+    }
     updateGroovingCalculations();
 function generateGrooving() {
 
