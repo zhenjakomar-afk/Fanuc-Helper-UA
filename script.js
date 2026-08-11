@@ -1538,3 +1538,22 @@ function copyProgram() {
             );
         });
 }
+function copyGroovingProgram() {
+
+    const output =
+        document.getElementById("groovingOutput");
+
+    if (!output) {
+        return;
+    }
+
+    output.select();
+
+    navigator.clipboard.writeText(output.value)
+        .then(() => {
+            alert("Программа скопирована.");
+        })
+        .catch(() => {
+            alert("Не удалось скопировать программу.");
+        });
+}
