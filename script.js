@@ -241,9 +241,7 @@ G00G28U0W0;`;
         return;
     }
 }
-    document.getElementById("grooveWidth")
-        .addEventListener("input", updateGroovingCalculations);
-}function updateGroovingCalculations() {
+    function updateGroovingCalculations() {
 
     const widthInput =
         document.getElementById("grooveWidth");
