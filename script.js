@@ -1541,15 +1541,14 @@ function copyProgram() {
 function copyGroovingProgram() {
 
     const output =
-        document.getElementById("groovingOutput");
+        document.getElementById("groovingProgram");
 
     if (!output) {
+        alert("Не найден текст программы.");
         return;
     }
 
-    output.select();
-
-    navigator.clipboard.writeText(output.value)
+    navigator.clipboard.writeText(output.innerText)
         .then(() => {
             alert("Программа скопирована.");
         })
