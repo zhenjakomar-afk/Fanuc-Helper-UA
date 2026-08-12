@@ -346,9 +346,12 @@ function showG71() {
         <button onclick="addG70Operation()">
             + Добавить G70
         </button>
-<button onclick="addG75Operation()">
-    + Добавить G75
-</button>
+        <button onclick="addG74Operation()">
+            + Добавить G74
+        </button>
+        <button onclick="addG75Operation()">
+            + Добавить G75
+        </button>
         <br><br>
 
         <button onclick="generateProgram()">
@@ -402,6 +405,23 @@ function addG70Operation() {
     renderOperations();
 }
 /* =========================
+   Добавление G74
+========================= */
+
+function addG74Operation() {
+
+    const id = Date.now() + Math.random();
+
+    const operation = {
+        id: id,
+        type: "G74"
+    };
+
+    operations.push(operation);
+
+    renderOperations();
+}
+/* =========================
    Добавление G75
 ========================= */
 
@@ -443,8 +463,13 @@ function renderOperations() {
         if (operation.type === "G70") {
             renderG70(operation, index);
         }
+
+        if (operation.type === "G74") {
+            renderG74(operation, index);
+        }
+       
         if (operation.type === "G75") {
-    renderG75(operation, index);
+            renderG75(operation, index);
         }
     });
 }
@@ -677,6 +702,143 @@ function renderG70(operation, index) {
 
     container.appendChild(block);
 }
+/* =========================
+   Отрисовка G74
+========================= */
+
+function renderG74(operation, index) {
+
+    const container =
+        document.getElementById("operations");
+
+    const block =
+        document.createElement("div");
+
+    block.className = "cycle";
+
+    block.innerHTML = `
+
+        <hr>
+
+        <h3>G74 №${index + 1}</h3>
+
+        <label>Инструмент</label>
+        <input
+            type="text"
+            id="tool_${operation.id}"
+            value="T404"
+        >
+
+        <label>Максимальные обороты S</label>
+        <input
+            type="number"
+            id="maxRpm_${operation.id}"
+            value="1500"
+        >
+
+        <label>Скорость резания G96 S</label>
+        <input
+            type="number"
+            id="cuttingSpeed_${operation.id}"
+            value="100"
+        >
+
+        <h4>Параметры пластины</h4>
+
+        <label>Ширина пластины, мм</label>
+        <input
+            type="number"
+            step="0.1"
+            id="insertWidth_${operation.id}"
+            value="4"
+        >
+
+        <h4>Исходная точка</h4>
+
+        <label>Стартовый X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="startX_${operation.id}"
+            value="40"
+        >
+
+        <label>Стартовый Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="startZ_${operation.id}"
+            value="2"
+        >
+
+        <h4>Параметры канавки</h4>
+
+        <label>Ширина канавки, мм</label>
+        <input
+            type="number"
+            step="0.001"
+            id="grooveWidth_${operation.id}"
+            value="36"
+        >
+
+        <label>Конечный X — рассчитывается автоматически</label>
+        <input
+            type="text"
+            id="endX_${operation.id}"
+            readonly
+        >
+
+        <label>Глубина по Z, мм</label>
+        <input
+            type="number"
+            step="0.001"
+            id="depthZ_${operation.id}"
+            value="-5"
+        >
+
+        <label>Q — глубина врезания, мкм</label>
+        <input
+            type="number"
+            id="q_${operation.id}"
+            value="5000"
+        >
+
+        <label>P — отступ между врезаниями, мкм</label>
+        <input
+            type="text"
+            id="p_${operation.id}"
+            readonly
+        >
+
+        <label>Подача F</label>
+        <input
+            type="number"
+            step="0.001"
+            id="feed_${operation.id}"
+            value="0.05"
+        >
+
+        <br><br>
+
+        <button onclick="removeOperation(${operation.id})">
+            Удалить этот G74
+        </button>
+    `;
+
+    container.appendChild(block);
+
+    updateG74Fields(operation.id);
+
+    document.getElementById(`insertWidth_${operation.id}`)
+        .addEventListener("input", () => updateG74Fields(operation.id));
+
+    document.getElementById(`startX_${operation.id}`)
+        .addEventListener("input", () => updateG74Fields(operation.id));
+
+    document.getElementById(`grooveWidth_${operation.id}`)
+        .addEventListener("input", () => updateG74Fields(operation.id));
+}
+
 /* =========================
    Отрисовка G75
 ========================= */
@@ -1180,6 +1342,9 @@ function generateProgram() {
 
             generateG70(operation);
         }
+       if (operation.type === "G74") {
+    generateG74(operation);
+       }
 
     });
     program += "M30;\n";
