@@ -96,8 +96,11 @@ function showPage(page) {
             <label>Стартовый Z:</label>
             <input type="number" id="g74StartZ" value="2" step="0.1">
 
-            <label>Конечный X:</label>
-            <input type="number" id="g74EndX" value="40" step="0.1">
+            <label>Ширина канавки, мм:</label>
+            <input type="number" id="g74GrooveWidth" value="36" step="0.1">
+
+            <label>Конечный X — рассчитывается автоматически:</label>
+            <input type="text" id="g74EndX" readonly>
 
             <label>Глубина по Z, мм:</label>
             <input type="number" id="g74DepthZ" value="5" step="0.1">
@@ -126,7 +129,14 @@ function showPage(page) {
 
         </div>
     `;
-    
+    document.getElementById("g74StartX")
+    .addEventListener("input", updateGroovingCalculations);
+
+document.getElementById("g74GrooveWidth")
+    .addEventListener("input", updateGroovingCalculations);
+
+document.getElementById("grooveWidth")
+    .addEventListener("input", updateGroovingCalculations);
     updateGroovingCalculations();
     }
 function generateGrooving() {
@@ -262,7 +272,22 @@ G00G28U0W0;`;
 
     const width =
         parseFloat(widthInput.value) || 0;
+const g74StartX =
+    parseFloat(
+        document.getElementById("g74StartX").value
+    ) || 0;
 
+const g74GrooveWidth =
+    parseFloat(
+        document.getElementById("g74GrooveWidth").value
+    ) || 0;
+
+const g74EndX =
+    g74StartX +
+    2 * (g74GrooveWidth - width);
+
+document.getElementById("g74EndX").value =
+    formatCoordinate(g74EndX);
     // =========================
     // G75
     // Q = ширина пластины - 0.5 мм
