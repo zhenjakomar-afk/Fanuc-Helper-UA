@@ -1009,6 +1009,21 @@ function renderG75(operation, index) {
         );
     }
 }
+function updateG75Q(id) {
+
+    const insertWidth =
+        Number(getValue(`insertWidth_${id}`));
+
+    const q =
+        Math.round((insertWidth - 0.5) * 1000);
+
+    const qField =
+        document.getElementById(`stepQ_${id}`);
+
+    if (qField) {
+        qField.value = q;
+    }
+}
 
 /* =========================
    Список контуров
