@@ -838,6 +838,37 @@ function renderG74(operation, index) {
     document.getElementById(`grooveWidth_${operation.id}`)
         .addEventListener("input", () => updateG74Fields(operation.id));
 }
+function updateG74Fields(id) {
+
+    const insertWidth =
+        Number(getValue(`insertWidth_${id}`));
+
+    const startX =
+        Number(getValue(`startX_${id}`));
+
+    const grooveWidth =
+        Number(getValue(`grooveWidth_${id}`));
+
+    const endX =
+        startX + 2 * (grooveWidth - insertWidth);
+
+    const p =
+        Math.round((insertWidth * 2 - 0.5) * 1000);
+
+    const endXField =
+        document.getElementById(`endX_${id}`);
+
+    const pField =
+        document.getElementById(`p_${id}`);
+
+    if (endXField) {
+        endXField.value = formatCoordinate(endX);
+    }
+
+    if (pField) {
+        pField.value = p;
+    }
+}
 
 /* =========================
    Отрисовка G75
