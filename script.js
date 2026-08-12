@@ -1671,6 +1671,68 @@ program += "M09;\n";
 program += "M05;\n";
 program += "G00G28U0W0;\n";
     }
+   function generateG74(operation) {
+
+    const tool =
+        getValue(`tool_${operation.id}`);
+
+    const maxRpm =
+        getValue(`maxRpm_${operation.id}`);
+
+    const cuttingSpeed =
+        getValue(`cuttingSpeed_${operation.id}`);
+
+    const startX =
+        formatCoordinate(
+            getValue(`startX_${operation.id}`)
+        );
+
+    const startZ =
+        formatCoordinate(
+            getValue(`startZ_${operation.id}`)
+        );
+
+    const endX =
+        formatCoordinate(
+            getValue(`endX_${operation.id}`)
+        );
+
+    const depthZ =
+        formatCoordinate(
+            getValue(`depthZ_${operation.id}`)
+        );
+
+    const p =
+        getValue(`p_${operation.id}`);
+
+    const q =
+        getValue(`q_${operation.id}`);
+
+    const feed =
+        getValue(`feed_${operation.id}`);
+
+    program += `${tool};\n`;
+    program += `G90G54;\n`;
+    program += `G50S${maxRpm};\n`;
+    program += `G96S${cuttingSpeed}M03;\n`;
+
+    program += `G00Z${startZ};\n`;
+    program += `G00X${startX}M08;\n`;
+
+    program += `G74R0.5;\n`;
+
+    program +=
+        `G74X${endX}` +
+        `Z${depthZ}` +
+        `P${p}` +
+        `Q${q}` +
+        `F${feed};\n`;
+
+    program += `G00Z10.;\n`;
+    program += `M09;\n`;
+    program += `M05;\n`;
+    program += `G00G28U0W0;\n`;
+   }
 }
 
 
