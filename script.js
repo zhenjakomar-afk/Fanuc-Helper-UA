@@ -1342,9 +1342,12 @@ function generateProgram() {
 
             generateG70(operation);
         }
-       if (operation.type === "G74") {
-    generateG74(operation);
-       }
+        if (operation.type === "G74") {
+            generateG74(operation);
+        }
+        if (operation.type === "G75") {
+            generateG75(operation);
+        }
 
     });
     program += "M30;\n";
@@ -1551,6 +1554,7 @@ if (correction !== "") {
 program += "M09;\n";
 program += "M05;\n";
 program += "G00G28U0W0;\n";
+       program += ";\n";
     }
 
 
@@ -1670,6 +1674,7 @@ if (correction !== "") {
 program += "M09;\n";
 program += "M05;\n";
 program += "G00G28U0W0;\n";
+   program += ";\n";
     }
    function generateG74(operation) {
 
@@ -1732,6 +1737,80 @@ program += "G00G28U0W0;\n";
     program += `M09;\n`;
     program += `M05;\n`;
     program += `G00G28U0W0;\n`;
+   program += ";\n";
+   }
+   function generateG75(operation) {
+
+    const tool =
+        getValue(`tool_${operation.id}`);
+
+    const maxRpm =
+        getValue(`maxRpm_${operation.id}`);
+
+    const cuttingSpeed =
+        getValue(`cuttingSpeed_${operation.id}`);
+
+    const startX =
+        formatCoordinate(
+            getValue(`startX_${operation.id}`)
+        );
+
+    const startZ =
+        formatCoordinate(
+            getValue(`startZ_${operation.id}`)
+        );
+
+    const endX =
+        formatCoordinate(
+            getValue(`endX_${operation.id}`)
+        );
+
+    const endZ =
+        formatCoordinate(
+            getValue(`endZ_${operation.id}`)
+        );
+
+    const depthP =
+        Number(
+            getValue(`depthP_${operation.id}`)
+        );
+
+    const insertWidth =
+        Number(
+            getValue(`insertWidth_${operation.id}`)
+        );
+
+    const q =
+        Math.round((insertWidth - 0.5) * 1000);
+
+    const p =
+        Math.round(depthP * 1000);
+
+    const feed =
+        getValue(`feed_${operation.id}`);
+
+    program += `${tool};\n`;
+    program += `G90G54;\n`;
+    program += `G50S${maxRpm};\n`;
+    program += `G96S${cuttingSpeed}M03;\n`;
+
+    program += `G00Z${startZ};\n`;
+    program += `G00X${startX}M08;\n`;
+
+    program += `G75R0.5;\n`;
+
+    program +=
+        `G75X${endX}` +
+        `Z${endZ}` +
+        `P${p}` +
+        `Q${q}` +
+        `F${feed};\n`;
+
+    program += `G00Z10.;\n`;
+    program += `M09;\n`;
+    program += `M05;\n`;
+    program += `G00G28U0W0;\n`;
+   program += ";\n";
    }
 }
 
