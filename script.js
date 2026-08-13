@@ -1,4 +1,4 @@
-let cycles = [];
+шlet cycles = [];
 let operations = [];
 
 
@@ -545,47 +545,57 @@ function renderG71(cycle, index) {
 
         <h4>Параметры G71</h4>
 
-        <label>Глубина резания U</label>
-        <input
-            type="number"
-            step="0.001"
-            id="depth_${cycle.id}"
-            value="2"
-        >
+<label>Глубина резания U</label>
+<br>
+<input
+    type="number"
+    step="0.001"
+    id="depth_${cycle.id}"
+    value="2"
+>
+<br><br>
 
-        <label>Отвод R</label>
-        <input
-            type="number"
-            step="0.001"
-            id="retract_${cycle.id}"
-            value="0.5"
-        >
+<label>Отвод R</label>
+<br>
+<input
+    type="number"
+    step="0.001"
+    id="retract_${cycle.id}"
+    value="0.5"
+>
+<br><br>
 
-        <label>Припуск по X — U</label>
-        <input
-            type="number"
-            step="0.001"
-            id="allowanceX_${cycle.id}"
-            value="0"
-        >
+<label>Припуск по X — U</label>
+<br>
+<input
+    type="number"
+    step="0.001"
+    id="allowanceX_${cycle.id}"
+    value="0"
+>
+<br><br>
 
-        <label>Припуск по Z — W</label>
-        <input
-            type="number"
-            step="0.001"
-            id="allowanceZ_${cycle.id}"
-            value="0"
-        >
+<label>Припуск по Z — W</label>
+<br>
+<input
+    type="number"
+    step="0.001"
+    id="allowanceZ_${cycle.id}"
+    value="0"
+>
+<br><br>
 
-        <label>Подача F</label>
-        <input
-            type="number"
-            step="0.001"
-            id="feed_${cycle.id}"
-            value="0.22"
-        >
+<label>Подача F</label>
+<br>
+<input
+    type="number"
+    step="0.001"
+    id="feed_${cycle.id}"
+    value="0.22"
+>
+<br><br>
 
-        <h4>Контур</h4>
+<h4>Контур</h4>
 
         <div id="points_${cycle.id}"></div>
 
