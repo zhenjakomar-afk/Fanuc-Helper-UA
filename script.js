@@ -566,7 +566,7 @@ function renderG71(cycle, index) {
             type="number"
             step="0.001"
             id="allowanceX_${cycle.id}"
-            value="1"
+            value="0"
         >
 
         <label>Припуск по Z — W</label>
@@ -574,7 +574,7 @@ function renderG71(cycle, index) {
             type="number"
             step="0.001"
             id="allowanceZ_${cycle.id}"
-            value="0.1"
+            value="0"
         >
 
         <label>Подача F</label>
