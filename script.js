@@ -1,4 +1,4 @@
-шlet cycles = [];
+let cycles = [];
 let operations = [];
 
 
