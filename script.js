@@ -353,7 +353,10 @@ function showG71() {
             + Добавить G75
         </button>
         <br><br>
-
+        <button onclick="addDrillG01Operation()">
+            + Сверление G01
+        </button>
+        
         <button onclick="generateProgram()">
             СОЗДАТЬ ПРОГРАММУ
         </button>
@@ -440,6 +443,24 @@ function addG75Operation() {
 }
 
 /* =========================
+   Добавление сверления G01
+========================= */
+
+function addDrillG01Operation() {
+
+    const id = Date.now() + Math.random();
+
+    const operation = {
+        id: id,
+        type: "DRILL_G01"
+    };
+
+    operations.push(operation);
+
+    renderOperations();
+}
+
+/* =========================
    Отрисовка операций
 ========================= */
 
@@ -470,6 +491,9 @@ function renderOperations() {
        
         if (operation.type === "G75") {
             renderG75(operation, index);
+        }
+        if (operation.type === "DRILL_G01") {
+            renderDrillG01(operation, index);
         }
     });
 }
