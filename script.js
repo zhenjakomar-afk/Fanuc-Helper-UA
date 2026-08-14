@@ -930,7 +930,13 @@ function renderG75(operation, index) {
             id="insertWidth_${operation.id}"
             value="4"
         >
+        <label>Тип канавки</label>
+<select id="grooveSide_${operation.id}">
+    <option value="outer">Наружная</option>
+    <option value="inner">Внутренняя</option>
+</select>
 
+<br><br>
         <h4>Исходная точка</h4>
 
         <label>Исходный X</label>
@@ -948,7 +954,17 @@ function renderG75(operation, index) {
             id="startZ_${operation.id}"
             value="-21.1"
         >
+<div id="innerApproach_${operation.id}" style="display:none;">
 
+    <label>Первый безопасный Z</label>
+    <input
+        type="number"
+        step="0.001"
+        id="safeZ_${operation.id}"
+        value="5"
+    >
+
+</div>
         <h4>Конечная точка</h4>
 
         <label>Конечный X</label>
@@ -1001,7 +1017,24 @@ function renderG75(operation, index) {
     `;
 
     container.appendChild(block);
+const grooveSide =
+    document.getElementById(`grooveSide_${operation.id}`);
 
+const innerApproach =
+    document.getElementById(`innerApproach_${operation.id}`);
+
+if (grooveSide && innerApproach) {
+
+    grooveSide.addEventListener("change", function () {
+
+        if (this.value === "inner") {
+            innerApproach.style.display = "block";
+        }
+        else {
+            innerApproach.style.display = "none";
+        }
+    });
+}
     updateG75Q(operation.id);
 
     const widthInput =
