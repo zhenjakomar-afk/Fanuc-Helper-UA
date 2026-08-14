@@ -1840,6 +1840,14 @@ program += "G00G28U0W0;\n";
     const cuttingSpeed =
         getValue(`cuttingSpeed_${operation.id}`);
 
+      const grooveSide =
+    getValue(`grooveSide_${operation.id}`);
+
+const safeZ =
+    formatCoordinate(
+        getValue(`safeZ_${operation.id}`)
+    );
+      
     const startX =
         formatCoordinate(
             getValue(`startX_${operation.id}`)
@@ -1884,10 +1892,21 @@ program += "G00G28U0W0;\n";
     program += `G50S${maxRpm};\n`;
     program += `G96S${cuttingSpeed}M03;\n`;
 
+    if (grooveSide === "inner") {
+
+    program += `G00Z${safeZ};\n`;
+    program += `G00X${startX};\n`;
+    program += `G00Z${startZ}M08;\n`;
+
+}
+else {
+
     program += `G00Z${startZ};\n`;
     program += `G00X${startX}M08;\n`;
 
-    program += `G75R0.5;\n`;
+}
+
+program += `G75R0.5;\n`;
 
     program +=
         `G75X${endX}` +
