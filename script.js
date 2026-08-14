@@ -937,6 +937,17 @@ function renderG75(operation, index) {
 </select>
 
 <br><br>
+<div id="innerApproach_${operation.id}" style="display:none;">
+
+    <label>Первый безопасный Z</label>
+    <input
+        type="number"
+        step="0.001"
+        id="safeZ_${operation.id}"
+        value="5"
+    >
+
+</div>
         <h4>Исходная точка</h4>
 
         <label>Исходный X</label>
@@ -954,17 +965,7 @@ function renderG75(operation, index) {
             id="startZ_${operation.id}"
             value="-21.1"
         >
-<div id="innerApproach_${operation.id}" style="display:none;">
 
-    <label>Первый безопасный Z</label>
-    <input
-        type="number"
-        step="0.001"
-        id="safeZ_${operation.id}"
-        value="5"
-    >
-
-</div>
         <h4>Конечная точка</h4>
 
         <label>Конечный X</label>
