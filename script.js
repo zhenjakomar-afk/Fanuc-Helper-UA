@@ -1094,6 +1094,86 @@ function updateG75Q(id) {
 }
 
 /* =========================
+   Отрисовка сверления G01
+========================= */
+
+function renderDrillG01(operation, index) {
+
+    const container =
+        document.getElementById("operations");
+
+    const block =
+        document.createElement("div");
+
+    block.className = "cycle";
+
+    block.innerHTML = `
+
+        <hr>
+
+        <h3>Сверление через G01 №${index + 1}</h3>
+
+        <label>Инструмент</label>
+        <input
+            type="text"
+            id="tool_${operation.id}"
+            value="T1010"
+        >
+
+        <label>Обороты шпинделя G97 S</label>
+        <input
+            type="number"
+            id="rpm_${operation.id}"
+            value="800"
+        >
+
+        <h4>Подвод инструмента</h4>
+
+        <label>Подвод по Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachZ_${operation.id}"
+            value="5"
+        >
+
+        <label>Подвод по X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachX_${operation.id}"
+            value="0"
+        >
+
+        <h4>Параметры сверления</h4>
+
+        <label>Глубина сверления Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="drillZ_${operation.id}"
+            value="-100"
+        >
+
+        <label>Подача F</label>
+        <input
+            type="number"
+            step="0.001"
+            id="feed_${operation.id}"
+            value="0.09"
+        >
+
+        <br><br>
+
+        <button onclick="removeOperation(${operation.id})">
+            Удалить это сверление G01
+        </button>
+    `;
+
+    container.appendChild(block);
+}
+
+/* =========================
    Список контуров
 ========================= */
 
@@ -1461,6 +1541,9 @@ function generateProgram() {
         }
         if (operation.type === "G75") {
             generateG75(operation);
+        }
+        if (operation.type === "DRILL_G01") {
+            generateDrillG01(operation);
         }
 
     });
