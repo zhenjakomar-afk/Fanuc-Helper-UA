@@ -2028,6 +2028,47 @@ program += `G75R0.5;\n`;
     program += `G00G28U0W0;\n`;
    program += ";\n";
    }
+   function generateDrillG01(operation) {
+
+    const tool =
+        getValue(`tool_${operation.id}`);
+
+    const rpm =
+        getValue(`rpm_${operation.id}`);
+
+    const approachZ =
+        formatCoordinate(
+            getValue(`approachZ_${operation.id}`)
+        );
+
+    const approachX =
+        formatCoordinate(
+            getValue(`approachX_${operation.id}`)
+        );
+
+    const drillZ =
+        formatCoordinate(
+            getValue(`drillZ_${operation.id}`)
+        );
+
+    const feed =
+        formatCoordinate(
+            getValue(`feed_${operation.id}`)
+        );
+
+    program += `${tool};\n`;
+    program += `G90G54;\n`;
+    program += `G97S${rpm}M03;\n`;
+    program += `G00Z${approachZ};\n`;
+    program += `G00X${approachX}M08;\n`;
+    program += `G01Z${drillZ}F${feed};\n`;
+    program += `G00Z10.;\n`;
+    program += `M09;\n`;
+    program += `M05;\n`;
+    program += `G00G28U0W0;\n`;
+    program += `M01;\n`;
+    program += ";\n";
+   }
 }
 
 
