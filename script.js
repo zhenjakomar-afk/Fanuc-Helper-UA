@@ -359,6 +359,9 @@ function showG71() {
         <button onclick="addDrillG83Operation()">
             + Глубокое сверление G83
         </button>
+        <button onclick="addThreadG76Operation()">
+            + Наружная резьба G76
+        </button>
 
         <button onclick="generateProgram()">
             СОЗДАТЬ ПРОГРАММУ
@@ -481,6 +484,24 @@ function addDrillG83Operation() {
 }
 
 /* =========================
+   Добавление наружной резьбы G76
+========================= */
+
+function addThreadG76Operation() {
+
+    const id = Date.now() + Math.random();
+
+    const operation = {
+        id: id,
+        type: "THREAD_G76"
+    };
+
+    operations.push(operation);
+
+    renderOperations();
+}
+
+/* =========================
    Отрисовка операций
 ========================= */
 
@@ -517,6 +538,9 @@ function renderOperations() {
         }
         if (operation.type === "DRILL_G83") {
             renderDrillG83(operation, index);
+        }
+        if (operation.type === "THREAD_G76") {
+            renderThreadG76(operation, index);
         }
     });
 }
@@ -1284,6 +1308,140 @@ function renderDrillG83(operation, index) {
 }
 
 /* =========================
+   Отрисовка наружной резьбы G76
+========================= */
+
+function renderThreadG76(operation, index) {
+
+    const container =
+        document.getElementById("operations");
+
+    const block =
+        document.createElement("div");
+
+    block.className = "cycle";
+
+    block.innerHTML = `
+
+        <hr>
+
+        <h3>Наружная резьба G76 №${index + 1}</h3>
+
+        <label>Инструмент</label>
+        <input
+            type="text"
+            id="tool_${operation.id}"
+            value="T505"
+        >
+
+        <label>Обороты шпинделя G97 S</label>
+        <input
+            type="number"
+            id="rpm_${operation.id}"
+            value="600"
+        >
+
+        <label>Подвод Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachZ_${operation.id}"
+            value="5"
+        >
+
+        <label>Подвод X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachX_${operation.id}"
+            value="25"
+        >
+
+        <label>Чистовые проходы</label>
+        <input
+            type="number"
+            id="finishPasses_${operation.id}"
+            value="1"
+        >
+
+        <label>Выход / фаска</label>
+        <input
+            type="number"
+            id="chamfer_${operation.id}"
+            value="0"
+        >
+
+        <label>Угол профиля</label>
+        <input
+            type="number"
+            id="threadAngle_${operation.id}"
+            value="60"
+        >
+
+        <label>Минимальная глубина прохода Q (первая строка)</label>
+        <input
+            type="number"
+            id="firstQ_${operation.id}"
+            value="50"
+        >
+
+        <label>Чистовой припуск R</label>
+        <input
+            type="number"
+            step="0.001"
+            id="finishR_${operation.id}"
+            value="0.05"
+        >
+
+        <label>Конечный диаметр X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="threadX_${operation.id}"
+            value="20"
+        >
+
+        <label>Конечная координата Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="threadZ_${operation.id}"
+            value="-28"
+        >
+
+        <label>Высота резьбы P</label>
+        <input
+            type="number"
+            id="threadP_${operation.id}"
+            value="1626"
+        >
+
+        <label>Глубина первого прохода Q (вторая строка)</label>
+        <input
+            type="number"
+            id="secondQ_${operation.id}"
+            value="50"
+        >
+
+        <label>Шаг резьбы F</label>
+        <input
+            type="number"
+            step="0.001"
+            id="threadF_${operation.id}"
+            value="3"
+        >
+
+        <br><br>
+
+        <button onclick="removeOperation(${operation.id})">
+            Удалить эту резьбу G76
+        </button>
+    `;
+
+    container.appendChild(block);
+}
+
+/* =========================
    Список контуров
 ========================= */
 
@@ -1657,6 +1815,9 @@ function generateProgram() {
         }
         if (operation.type === "DRILL_G83") {
             generateDrillG83(operation);
+        }
+        if (operation.type === "THREAD_G76") {
+            generateThreadG76(operation);
         }
 
     });
@@ -2221,6 +2382,93 @@ program += `G75R0.5;\n`;
     program += `G00X${approachX}M08;\n`;
     program += `G83Z${drillZ}Q${q}F${feed};\n`;
     program += `G80;\n`;
+    program += `G00Z10.;\n`;
+    program += `M09;\n`;
+    program += `M05;\n`;
+    program += `G00G28U0W0;\n`;
+    program += `M01;\n`;
+    program += ";\n";
+   }
+   function generateThreadG76(operation) {
+
+    const tool =
+        getValue(`tool_${operation.id}`);
+
+    const rpm =
+        getValue(`rpm_${operation.id}`);
+
+    const approachZ =
+        formatCoordinate(
+            getValue(`approachZ_${operation.id}`)
+        );
+
+    const approachX =
+        formatCoordinate(
+            getValue(`approachX_${operation.id}`)
+        );
+
+    const finishPasses =
+        getValue(`finishPasses_${operation.id}`)
+            .padStart(2, "0");
+
+    const chamfer =
+        getValue(`chamfer_${operation.id}`)
+            .padStart(2, "0");
+
+    const threadAngle =
+        getValue(`threadAngle_${operation.id}`)
+            .padStart(2, "0");
+
+    const firstP =
+        finishPasses + chamfer + threadAngle;
+
+    const firstQ =
+        getValue(`firstQ_${operation.id}`);
+
+    const finishR =
+        formatCoordinate(
+            getValue(`finishR_${operation.id}`)
+        );
+
+    const threadX =
+        formatCoordinate(
+            getValue(`threadX_${operation.id}`)
+        );
+
+    const threadZ =
+        formatCoordinate(
+            getValue(`threadZ_${operation.id}`)
+        );
+
+    const threadP =
+        getValue(`threadP_${operation.id}`);
+
+    const secondQ =
+        getValue(`secondQ_${operation.id}`);
+
+    const threadF =
+        formatCoordinate(
+            getValue(`threadF_${operation.id}`)
+        );
+
+    program += `${tool};\n`;
+    program += `G90G54;\n`;
+    program += `G97S${rpm}M03;\n`;
+    program += `G00Z${approachZ};\n`;
+    program += `G00X${approachX}M08;\n`;
+
+    program +=
+        `G76P${firstP}` +
+        `Q${firstQ}` +
+        `R${finishR};\n`;
+
+    program +=
+        `G76X${threadX}` +
+        `Z${threadZ}` +
+        `P${threadP}` +
+        `Q${secondQ}` +
+        `F${threadF};\n`;
+
     program += `G00Z10.;\n`;
     program += `M09;\n`;
     program += `M05;\n`;
