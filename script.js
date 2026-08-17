@@ -1409,12 +1409,13 @@ function renderThreadG76(operation, index) {
             value="-28"
         >
 
-        <label>Высота резьбы P</label>
-        <input
-            type="number"
-            id="threadP_${operation.id}"
-            value="1626"
-        >
+        <label>Высота резьбы P — рассчитывается автоматически</label>
+<input
+    type="text"
+    id="threadP_${operation.id}"
+    value="1626"
+    readonly
+>
 
         <label>Глубина первого прохода Q (вторая строка)</label>
         <input
@@ -1439,6 +1440,38 @@ function renderThreadG76(operation, index) {
     `;
 
     container.appendChild(block);
+   updateThreadG76P(operation.id);
+
+const threadFInput =
+    document.getElementById(`threadF_${operation.id}`);
+
+if (threadFInput) {
+    threadFInput.addEventListener(
+        "input",
+        function () {
+            updateThreadG76P(operation.id);
+        }
+    );
+}
+}
+function updateThreadG76P(id) {
+
+    const threadF =
+        Number(
+            getValue(`threadF_${id}`)
+        );
+
+    const threadP =
+        Math.round(
+            threadF * 0.542 * 1000
+        );
+
+    const threadPField =
+        document.getElementById(`threadP_${id}`);
+
+    if (threadPField) {
+        threadPField.value = threadP;
+    }
 }
 
 /* =========================
