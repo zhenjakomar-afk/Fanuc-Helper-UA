@@ -356,7 +356,10 @@ function showG71() {
         <button onclick="addDrillG01Operation()">
             + Сверление G01
         </button>
-        
+        <button onclick="addDrillG83Operation()">
+            + Глубокое сверление G83
+        </button>
+
         <button onclick="generateProgram()">
             СОЗДАТЬ ПРОГРАММУ
         </button>
@@ -459,6 +462,23 @@ function addDrillG01Operation() {
 
     renderOperations();
 }
+/* =========================
+   Добавление глубокого сверления G83
+========================= */
+
+function addDrillG83Operation() {
+
+    const id = Date.now() + Math.random();
+
+    const operation = {
+        id: id,
+        type: "DRILL_G83"
+    };
+
+    operations.push(operation);
+
+    renderOperations();
+}
 
 /* =========================
    Отрисовка операций
@@ -494,6 +514,9 @@ function renderOperations() {
         }
         if (operation.type === "DRILL_G01") {
             renderDrillG01(operation, index);
+        }
+        if (operation.type === "DRILL_G83") {
+            renderDrillG83(operation, index);
         }
     });
 }
@@ -1174,6 +1197,93 @@ function renderDrillG01(operation, index) {
 }
 
 /* =========================
+   Отрисовка глубокого сверления G83
+========================= */
+
+function renderDrillG83(operation, index) {
+
+    const container =
+        document.getElementById("operations");
+
+    const block =
+        document.createElement("div");
+
+    block.className = "cycle";
+
+    block.innerHTML = `
+
+        <hr>
+
+        <h3>Глубокое сверление G83 №${index + 1}</h3>
+
+        <label>Инструмент</label>
+        <input
+            type="text"
+            id="tool_${operation.id}"
+            value="T1010"
+        >
+
+        <label>Обороты шпинделя G97 S</label>
+        <input
+            type="number"
+            id="rpm_${operation.id}"
+            value="400"
+        >
+
+        <h4>Подвод инструмента</h4>
+
+        <label>Подвод по Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachZ_${operation.id}"
+            value="3"
+        >
+
+        <label>Подвод по X</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachX_${operation.id}"
+            value="0"
+        >
+
+        <h4>Параметры G83</h4>
+
+        <label>Глубина сверления Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="drillZ_${operation.id}"
+            value="-100"
+        >
+
+        <label>Q — глубина врезания, мкм</label>
+        <input
+            type="number"
+            id="q_${operation.id}"
+            value="5000"
+        >
+
+        <label>Подача F</label>
+        <input
+            type="number"
+            step="0.001"
+            id="feed_${operation.id}"
+            value="0.04"
+        >
+
+        <br><br>
+
+        <button onclick="removeOperation(${operation.id})">
+            Удалить это сверление G83
+        </button>
+    `;
+
+    container.appendChild(block);
+}
+
+/* =========================
    Список контуров
 ========================= */
 
@@ -1544,6 +1654,9 @@ function generateProgram() {
         }
         if (operation.type === "DRILL_G01") {
             generateDrillG01(operation);
+        }
+        if (operation.type === "DRILL_G83") {
+            generateDrillG83(operation);
         }
 
     });
@@ -2062,6 +2175,52 @@ program += `G75R0.5;\n`;
     program += `G00Z${approachZ};\n`;
     program += `G00X${approachX}M08;\n`;
     program += `G01Z${drillZ}F${feed};\n`;
+    program += `G00Z10.;\n`;
+    program += `M09;\n`;
+    program += `M05;\n`;
+    program += `G00G28U0W0;\n`;
+    program += `M01;\n`;
+    program += ";\n";
+   }
+   function generateDrillG83(operation) {
+
+    const tool =
+        getValue(`tool_${operation.id}`);
+
+    const rpm =
+        getValue(`rpm_${operation.id}`);
+
+    const approachZ =
+        formatCoordinate(
+            getValue(`approachZ_${operation.id}`)
+        );
+
+    const approachX =
+        formatCoordinate(
+            getValue(`approachX_${operation.id}`)
+        );
+
+    const drillZ =
+        formatCoordinate(
+            getValue(`drillZ_${operation.id}`)
+        );
+
+    const q =
+        getValue(`q_${operation.id}`);
+
+    const feed =
+        formatCoordinate(
+            getValue(`feed_${operation.id}`)
+        );
+
+    program += `${tool};\n`;
+    program += `G99G54;\n`;
+    program += `G18;\n`;
+    program += `G97S${rpm}M03;\n`;
+    program += `G00Z${approachZ};\n`;
+    program += `G00X${approachX}M08;\n`;
+    program += `G83Z${drillZ}Q${q}F${feed};\n`;
+    program += `G80;\n`;
     program += `G00Z10.;\n`;
     program += `M09;\n`;
     program += `M05;\n`;
