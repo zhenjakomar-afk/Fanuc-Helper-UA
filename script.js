@@ -1327,6 +1327,16 @@ function renderThreadG76(operation, index) {
 
         <h3>Наружная резьба G76 №${index + 1}</h3>
 
+<label>Направление резьбы</label>
+<select id="threadDirection_${operation.id}">
+    <option value="right">Правая</option>
+    <option value="left">Левая</option>
+</select>
+
+<br><br>
+
+<h4>Инструмент и режимы</h4>
+
         <label>Инструмент</label>
         <input
             type="text"
@@ -1340,6 +1350,8 @@ function renderThreadG76(operation, index) {
             id="rpm_${operation.id}"
             value="600"
         >
+
+<h4>Подвод инструмента</h4>
 
         <label>Подвод Z</label>
         <input
@@ -1356,6 +1368,8 @@ function renderThreadG76(operation, index) {
             id="approachX_${operation.id}"
             value="25"
         >
+
+<h4>Первая строка G76</h4>
 
         <label>Чистовые проходы</label>
         <input
@@ -1392,6 +1406,8 @@ function renderThreadG76(operation, index) {
             id="finishR_${operation.id}"
             value="0.05"
         >
+
+<h4>Вторая строка G76</h4>
 
         <label>Конечный диаметр X</label>
         <input
@@ -1450,6 +1466,44 @@ if (threadFInput) {
         "input",
         function () {
             updateThreadG76P(operation.id);
+        }
+    );
+}
+   const threadDirection =
+    document.getElementById(
+        `threadDirection_${operation.id}`
+    );
+
+if (threadDirection) {
+
+    threadDirection.addEventListener(
+        "change",
+        function () {
+
+            const approachZField =
+                document.getElementById(
+                    `approachZ_${operation.id}`
+                );
+
+            const threadZField =
+                document.getElementById(
+                    `threadZ_${operation.id}`
+                );
+
+            if (
+                approachZField &&
+                threadZField
+            ) {
+
+                const oldApproachZ =
+                    approachZField.value;
+
+                approachZField.value =
+                    threadZField.value;
+
+                threadZField.value =
+                    oldApproachZ;
+            }
         }
     );
 }
