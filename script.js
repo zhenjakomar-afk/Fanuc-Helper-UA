@@ -2589,10 +2589,26 @@ program += `G75R0.5;\n`;
     const secondQ =
         getValue(`secondQ_${operation.id}`);
 
-    const threadF =
+    let threadF;
+
+const threadSystem =
+    getValue(`threadSystem_${operation.id}`);
+
+if (threadSystem === "inch") {
+    const threadFField =
+        document.getElementById(`threadF_${operation.id}`);
+
+    const metricPitch =
+        Number(threadFField.dataset.metricPitch);
+
+    threadF =
+        formatCoordinate(metricPitch);
+} else {
+    threadF =
         formatCoordinate(
             getValue(`threadF_${operation.id}`)
         );
+}
 
     program += `${tool};\n`;
     program += `G90G54;\n`;
