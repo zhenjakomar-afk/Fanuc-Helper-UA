@@ -1425,6 +1425,13 @@ function renderThreadG76(operation, index) {
             value="-28"
         >
 
+<label>Система різьби</label>
+<select id="threadSystem_${operation.id}">
+    <option value="metric">Метрична</option>
+    <option value="inch">Дюймова</option>
+</select>
+
+<br><br>
         <label>Высота резьбы P — рассчитывается автоматически</label>
 <input
     type="text"
@@ -1440,13 +1447,12 @@ function renderThreadG76(operation, index) {
             value="50"
         >
 
-        <label>Шаг резьбы F</label>
-        <input
-            type="number"
-            step="0.001"
-            id="threadF_${operation.id}"
-            value="3"
-        >
+        <label>Крок різьби F</label>
+<input
+    type="text"
+    id="threadF_${operation.id}"
+    value="3"
+>
 
         <br><br>
 
@@ -1464,6 +1470,17 @@ const threadFInput =
 if (threadFInput) {
     threadFInput.addEventListener(
         "input",
+        function () {
+            updateThreadG76P(operation.id);
+        }
+    );
+}
+   const threadSystem =
+    document.getElementById(`threadSystem_${operation.id}`);
+
+if (threadSystem) {
+    threadSystem.addEventListener(
+        "change",
         function () {
             updateThreadG76P(operation.id);
         }
@@ -1507,26 +1524,65 @@ if (threadDirection) {
         }
     );
 }
-}
-function updateThreadG76P(id) {
+   function updateThreadG76P(id) {
+    const threadSystem =
+        getValue(`threadSystem_${id}`);
 
-    const threadF =
-        Number(
-            getValue(`threadF_${id}`)
-        );
-
-    const threadP =
-        Math.round(
-            threadF * 0.542 * 1000
-        );
+    const threadFField =
+        document.getElementById(`threadF_${id}`);
 
     const threadPField =
         document.getElementById(`threadP_${id}`);
 
-    if (threadPField) {
-        threadPField.value = threadP;
+    if (!threadFField || !threadPField) {
+        return;
     }
-}
+
+    if (threadSystem === "metric") {
+        const threadF =
+            Number(threadFField.value);
+
+        const threadP =
+            Math.round(threadF * 0.542 * 1000);
+
+        threadPField.value = threadP;
+        threadPField.readOnly = true;
+    }
+
+    if (threadSystem === "inch") {
+        const value =
+            threadFField.value.trim();
+
+        if (value.includes("/")) {
+            const parts = value.split("/");
+
+            if (parts.length === 2) {
+                const numerator = Number(parts[0]);
+                const denominator = Number(parts[1]);
+
+                if (denominator !== 0) {
+                    const inchPitch =
+                        numerator / denominator;
+
+                    const metricPitch =
+                        inchPitch * 25.4;
+
+                    threadFField.dataset.metricPitch =
+                        metricPitch;
+                }
+            }
+        } else {
+            const inchPitch = Number(value);
+
+            if (!isNaN(inchPitch)) {
+                threadFField.dataset.metricPitch =
+                    inchPitch * 25.4;
+            }
+        }
+
+        threadPField.readOnly = false;
+    }
+   }
 
 /* =========================
    Список контуров
