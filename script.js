@@ -1524,6 +1524,7 @@ if (threadDirection) {
         }
     );
 }
+}
    function updateThreadG76P(id) {
     const threadSystem =
         getValue(`threadSystem_${id}`);
