@@ -1327,6 +1327,14 @@ function renderThreadG76(operation, index) {
 
         <h3>Наружная резьба G76 №${index + 1}</h3>
 
+<label>Тип резьбы</label>
+<select id="threadType_${operation.id}">
+    <option value="external">Наружная</option>
+    <option value="internal">Внутренняя</option>
+</select>
+
+<br><br>
+
 <label>Направление резьбы</label>
 <select id="threadDirection_${operation.id}">
     <option value="right">Правая</option>
