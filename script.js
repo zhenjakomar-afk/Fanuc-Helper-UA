@@ -1325,7 +1325,7 @@ function renderThreadG76(operation, index) {
 
         <hr>
 
-        <h3>Наружная резьба G76 №${index + 1}</h3>
+        <h3 id="threadTitle_${operation.id}">Наружная резьба G76 №${index + 1}</h3>
 
 <label>Тип резьбы</label>
 <select id="threadType_${operation.id}">
@@ -1499,6 +1499,31 @@ if (threadFInput) {
             updateThreadG76P(operation.id);
         }
     );
+}
+   const threadType =
+    document.getElementById(`threadType_${operation.id}`);
+
+const threadTitle =
+    document.getElementById(`threadTitle_${operation.id}`);
+
+if (threadType && threadTitle) {
+
+    function updateThreadType() {
+        if (threadType.value === "internal") {
+            threadTitle.textContent =
+                `Внутренняя резьба G76 №${index + 1}`;
+        } else {
+            threadTitle.textContent =
+                `Наружная резьба G76 №${index + 1}`;
+        }
+    }
+
+    threadType.addEventListener(
+        "change",
+        updateThreadType
+    );
+
+    updateThreadType();
 }
    const threadSystem =
     document.getElementById(`threadSystem_${operation.id}`);
