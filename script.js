@@ -1430,7 +1430,24 @@ function renderThreadG76(operation, index) {
     <option value="metric">Метрична</option>
     <option value="inch">Дюймова</option>
 </select>
-
+<div id="inchSizeBlock_${operation.id}" style="display:none;">
+    <br>
+    <label>Розмір різьби, дюйм</label>
+    <select id="inchSize_${operation.id}">
+        <option value="1/8">1/8"</option>
+        <option value="1/4">1/4"</option>
+        <option value="3/8">3/8"</option>
+        <option value="1/2">1/2"</option>
+        <option value="3/4">3/4"</option>
+        <option value="1">1"</option>
+        <option value="1 1/4">1 1/4"</option>
+        <option value="1 1/2">1 1/2"</option>
+        <option value="2">2"</option>
+        <option value="2 1/2">2 1/2"</option>
+        <option value="3">3"</option>
+        <option value="4">4"</option>
+    </select>
+</div>
 <br><br>
         <label>Высота резьбы P — рассчитывается автоматически</label>
 <input
@@ -1478,13 +1495,27 @@ if (threadFInput) {
    const threadSystem =
     document.getElementById(`threadSystem_${operation.id}`);
 
+const inchSizeBlock =
+    document.getElementById(`inchSizeBlock_${operation.id}`);
+
 if (threadSystem) {
+
+    function updateThreadSystem() {
+
+        if (inchSizeBlock) {
+            inchSizeBlock.style.display =
+                threadSystem.value === "inch" ? "block" : "none";
+        }
+
+        updateThreadG76P(operation.id);
+    }
+
     threadSystem.addEventListener(
         "change",
-        function () {
-            updateThreadG76P(operation.id);
-        }
+        updateThreadSystem
     );
+
+    updateThreadSystem();
 }
    const threadDirection =
     document.getElementById(
