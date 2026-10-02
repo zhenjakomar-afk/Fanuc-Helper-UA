@@ -360,7 +360,7 @@ function showG71() {
             + Глубокое сверление G83
         </button>
         <button onclick="addThreadG76Operation()">
-            + Наружная резьба G76
+            + Резьба G76
         </button>
 
         <button onclick="generateProgram()">
