@@ -1373,13 +1373,7 @@ function renderThreadG76(operation, index) {
 
     <br><br>
 </div>
-        <label>Подвод Z</label>
-        <input
-            type="number"
-            step="0.001"
-            id="approachZ_${operation.id}"
-            value="5"
-        >
+        
 
         <label>Подвод X</label>
         <input
@@ -1387,6 +1381,13 @@ function renderThreadG76(operation, index) {
             step="0.001"
             id="approachX_${operation.id}"
             value="25"
+        >
+        <label>Подвод Z</label>
+        <input
+            type="number"
+            step="0.001"
+            id="approachZ_${operation.id}"
+            value="5"
         >
 
 <h4>Первая строка G76</h4>
@@ -2640,6 +2641,11 @@ program += `G75R0.5;\n`;
     const rpm =
         getValue(`rpm_${operation.id}`);
 
+      const threadSafeZ =
+    formatCoordinate(
+        getValue(`threadSafeZ_${operation.id}`)
+    );
+      
     const approachZ =
         formatCoordinate(
             getValue(`approachZ_${operation.id}`)
@@ -2713,8 +2719,17 @@ if (threadSystem === "inch") {
     program += `${tool};\n`;
     program += `G90G54;\n`;
     program += `G97S${rpm}M03;\n`;
+    const threadType = getValue(`threadType_${operation.id}`);
+const threadDirection = getValue(`threadDirection_${operation.id}`);
+
+if (threadType === "internal" && threadDirection === "left") {
+    program += `G00Z${threadSafeZ};\n`;
+    program += `G00X${approachX}M08;\n`;
+    program += `G00Z${approachZ};\n`;
+} else {
     program += `G00Z${approachZ};\n`;
     program += `G00X${approachX}M08;\n`;
+}
 
     program +=
         `G76P${firstP}` +
