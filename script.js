@@ -1361,6 +1361,18 @@ function renderThreadG76(operation, index) {
 
 <h4>Подвод инструмента</h4>
 
+<div id="threadSafeZBlock_${operation.id}" style="display:none;">
+
+    <label>Первый безопасный Z</label>
+    <input
+        type="number"
+        step="0.001"
+        id="threadSafeZ_${operation.id}"
+        value="5"
+    >
+
+    <br><br>
+</div>
         <label>Подвод Z</label>
         <input
             type="number"
@@ -1516,8 +1528,30 @@ if (threadType && threadTitle) {
             threadTitle.textContent =
                 `Наружная резьба G76 №${index + 1}`;
         }
+       const threadDirection =
+    document.getElementById(`threadDirection_${operation.id}`);
+
+const threadSafeZBlock =
+    document.getElementById(`threadSafeZBlock_${operation.id}`);
+
+if (threadDirection && threadSafeZBlock) {
+    threadSafeZBlock.style.display =
+        threadType.value === "internal" &&
+        threadDirection.value === "left"
+            ? "block"
+            : "none";
+}
     }
 
+   const directionSelect =
+    document.getElementById(`threadDirection_${operation.id}`);
+
+if (directionSelect) {
+    directionSelect.addEventListener(
+        "change",
+        updateThreadType
+    );
+}
     threadType.addEventListener(
         "change",
         updateThreadType
