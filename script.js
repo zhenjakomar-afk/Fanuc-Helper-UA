@@ -164,7 +164,68 @@ function calculateCuttingSpeed() {
         result.value = "";
     }
 }
+function calculateTaper() {
+    const ids = ["taperD", "taperSmallD", "taperL", "taperAngle"];
+    const fields = ids.map(id => document.getElementById(id));
 
+    const values = fields.map(field =>
+        field.value.trim() === "" ? null : Number(field.value)
+    );
+
+    const missing = values
+        .map((value, index) => value === null ? index : -1)
+        .filter(index => index !== -1);
+
+    if (missing.length !== 1) {
+        alert("Заполните ровно три поля, оставив одно пустым.");
+        return;
+    }
+
+    let [D, d, L, angle] = values;
+    const index = missing[0];
+
+    if (values.some(value => value !== null && !Number.isFinite(value))) {
+        alert("Введите корректные числа.");
+        return;
+    }
+
+    if ((D !== null && D <= 0) ||
+        (d !== null && d < 0) ||
+        (L !== null && L <= 0) ||
+        (angle !== null && (angle <= 0 || angle >= 90))) {
+        alert("Проверьте введённые размеры и угол.");
+        return;
+    }
+
+    const radians = angle === null ? null : angle * Math.PI / 180;
+
+    if (index === 0) {
+        D = d + 2 * L * Math.tan(radians);
+    }
+
+    if (index === 1) {
+        d = D - 2 * L * Math.tan(radians);
+    }
+
+    if (index === 2) {
+        L = (D - d) / (2 * Math.tan(radians));
+    }
+
+    if (index === 3) {
+        angle = Math.atan((D - d) / (2 * L)) * 180 / Math.PI;
+    }
+
+    const results = [D, d, L, angle];
+
+    if (results.some(value => !Number.isFinite(value)) ||
+        D <= 0 || d < 0 || D <= d || L <= 0 ||
+        angle <= 0 || angle >= 90) {
+        alert("Из этих данных невозможно построить правильный конус.");
+        return;
+    }
+
+    fields[index].value = results[index].toFixed(4);
+}
     function showGrooving() {
 
     const content = document.getElementById("content");
