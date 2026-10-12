@@ -55,6 +55,42 @@ function showPage(page) {
         id="calcRPM"
         readonly
     >
+    <br><br>
+<hr>
+
+<h3>Расчёт скорости резания Vc</h3>
+
+<label>Диаметр детали D (мм)</label>
+<br>
+<input
+    type="number"
+    id="speedDiameter"
+    value="100"
+    step="0.001"
+    oninput="calculateCuttingSpeed()"
+>
+
+<br><br>
+
+<label>Обороты шпинделя S (об/мин)</label>
+<br>
+<input
+    type="number"
+    id="speedRPM"
+    value="600"
+    step="1"
+    oninput="calculateCuttingSpeed()"
+>
+
+<br><br>
+
+<label>Скорость резания Vc (м/мин)</label>
+<br>
+<input
+    type="number"
+    id="speedResult"
+    readonly
+>
 `;
 }
 function calculateRPM() {
@@ -71,6 +107,25 @@ function calculateRPM() {
     if (diameter > 0 && speed > 0) {
         const rpm = (1000 * speed) / (Math.PI * diameter);
         result.value = Math.round(rpm);
+    } else {
+        result.value = "";
+    }
+}
+function calculateCuttingSpeed() {
+    const diameter = Number(
+        document.getElementById("speedDiameter").value
+    );
+
+    const rpm = Number(
+        document.getElementById("speedRPM").value
+    );
+
+    const result =
+        document.getElementById("speedResult");
+
+    if (diameter > 0 && rpm > 0) {
+        const speed = (Math.PI * diameter * rpm) / 1000;
+        result.value = speed.toFixed(2);
     } else {
         result.value = "";
     }
