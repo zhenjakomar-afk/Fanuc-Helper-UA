@@ -20,10 +20,60 @@ function showPage(page) {
     }
 
     content.innerHTML = `
-        <h2>${page.toUpperCase()}</h2>
-        <p>Этот раздел добавим следующим этапом.</p>
-        
-    `;
+    <h2>Калькуляторы</h2>
+
+    <h3>Расчёт оборотов шпинделя</h3>
+
+    <label>Диаметр детали D (мм)</label>
+    <br>
+    <input
+        type="number"
+        id="calcDiameter"
+        value="100"
+        step="0.001"
+        oninput="calculateRPM()"
+    >
+
+    <br><br>
+
+    <label>Скорость резания Vc (м/мин)</label>
+    <br>
+    <input
+        type="number"
+        id="calcSpeed"
+        value="150"
+        step="0.1"
+        oninput="calculateRPM()"
+    >
+
+    <br><br>
+
+    <label>Обороты шпинделя S (об/мин)</label>
+    <br>
+    <input
+        type="number"
+        id="calcRPM"
+        readonly
+    >
+`;
+}
+function calculateRPM() {
+    const diameter = Number(
+        document.getElementById("calcDiameter").value
+    );
+
+    const speed = Number(
+        document.getElementById("calcSpeed").value
+    );
+
+    const result = document.getElementById("calcRPM");
+
+    if (diameter > 0 && speed > 0) {
+        const rpm = (1000 * speed) / (Math.PI * diameter);
+        result.value = Math.round(rpm);
+    } else {
+        result.value = "";
+    }
 }
     function showGrooving() {
 
