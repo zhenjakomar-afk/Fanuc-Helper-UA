@@ -22,16 +22,7 @@ function showPage(page) {
     content.innerHTML = `
         <h2>${page.toUpperCase()}</h2>
         <p>Этот раздел добавим следующим этапом.</p>
-
-        <button onclick="showPage('g71')">
-            G71 / G70
-        </button>
-
-        <br><br>
-
-        <button onclick="showPage('grooving')">
-            Канавки G74 / G75
-        </button>
+        
     `;
 }
     function showGrooving() {
