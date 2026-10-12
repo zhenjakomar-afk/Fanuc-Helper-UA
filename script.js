@@ -91,6 +91,40 @@ function showPage(page) {
     id="speedResult"
     readonly
 >
+<br><br>
+<hr>
+
+<h3>Расчёт конусности</h3>
+
+<p>Введите три известных параметра из четырёх.</p>
+
+<label>Большой диаметр D (мм)</label>
+<br>
+<input type="number" id="taperD" step="any">
+
+<br><br>
+
+<label>Малый диаметр d (мм)</label>
+<br>
+<input type="number" id="taperSmallD" step="any">
+
+<br><br>
+
+<label>Длина конуса L (мм)</label>
+<br>
+<input type="number" id="taperL" step="any">
+
+<br><br>
+
+<label>Угол относительно оси Z (°)</label>
+<br>
+<input type="number" id="taperAngle" step="any">
+
+<br><br>
+
+<button onclick="calculateTaper()">
+    РАССЧИТАТЬ
+</button>
 `;
 }
 function calculateRPM() {
@@ -130,6 +164,7 @@ function calculateCuttingSpeed() {
         result.value = "";
     }
 }
+
     function showGrooving() {
 
     const content = document.getElementById("content");
