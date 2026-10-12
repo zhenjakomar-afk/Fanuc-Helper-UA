@@ -125,6 +125,67 @@ function showPage(page) {
 <button onclick="calculateTaper()">
     РАССЧИТАТЬ
 </button>
+<br><br>
+<hr>
+
+<h3>Калькулятор радиусов R (G02/G03)</h3>
+
+<label>Радиус R (мм)</label>
+<br>
+<input type="number" id="radiusR" step="any" value="5">
+
+<br><br>
+
+<label>Координата угла X (диаметр, мм)</label>
+<br>
+<input type="number" id="radiusX" step="any">
+
+<br><br>
+
+<label>Координата угла Z (мм)</label>
+<br>
+<input type="number" id="radiusZ" step="any">
+
+<br><br>
+
+<label>Расположение радиуса</label>
+<br>
+<select id="radiusPosition">
+    <option value="1">X увеличивается, Z увеличивается</option>
+    <option value="2">X увеличивается, Z уменьшается</option>
+    <option value="3">X уменьшается, Z увеличивается</option>
+    <option value="4">X уменьшается, Z уменьшается</option>
+</select>
+
+<br><br>
+
+<button onclick="calculateRadius()">
+    РАССЧИТАТЬ
+</button>
+
+<br><br>
+
+<label>Начало дуги X</label>
+<br>
+<input type="text" id="radiusStartX" readonly>
+
+<br><br>
+
+<label>Начало дуги Z</label>
+<br>
+<input type="text" id="radiusStartZ" readonly>
+
+<br><br>
+
+<label>Конец дуги X</label>
+<br>
+<input type="text" id="radiusEndX" readonly>
+
+<br><br>
+
+<label>Конец дуги Z</label>
+<br>
+<input type="text" id="radiusEndZ" readonly>
 `;
 }
 function calculateRPM() {
@@ -225,6 +286,65 @@ function calculateTaper() {
     }
 
     fields[index].value = results[index].toFixed(4);
+}
+function calculateRadius() {
+    const R = Number(document.getElementById("radiusR").value);
+    const X = Number(document.getElementById("radiusX").value);
+    const Z = Number(document.getElementById("radiusZ").value);
+
+    const position = document.getElementById("radiusPosition").value;
+
+    const rField = document.getElementById("radiusR");
+    const xField = document.getElementById("radiusX");
+    const zField = document.getElementById("radiusZ");
+
+    if (
+        rField.value.trim() === "" ||
+        xField.value.trim() === "" ||
+        zField.value.trim() === "" ||
+        !Number.isFinite(R) ||
+        !Number.isFinite(X) ||
+        !Number.isFinite(Z) ||
+        R <= 0
+    ) {
+        alert("Введите корректные значения R, X и Z.");
+        return;
+    }
+
+    let directionX = 1;
+    let directionZ = 1;
+
+    if (position === "2") directionZ = -1;
+    if (position === "3") directionX = -1;
+
+    if (position === "4") {
+        directionX = -1;
+        directionZ = -1;
+    }
+
+    // X программируется в диаметрах
+    const deltaX = 2 * R * directionX;
+    const deltaZ = R * directionZ;
+
+    // Начало дуги на поверхности вдоль Z
+    const startX = X;
+    const startZ = Z + deltaZ;
+
+    // Конец дуги на поверхности вдоль X
+    const endX = X + deltaX;
+    const endZ = Z;
+
+    document.getElementById("radiusStartX").value =
+        startX.toFixed(3);
+
+    document.getElementById("radiusStartZ").value =
+        startZ.toFixed(3);
+
+    document.getElementById("radiusEndX").value =
+        endX.toFixed(3);
+
+    document.getElementById("radiusEndZ").value =
+        endZ.toFixed(3);
 }
     function showGrooving() {
 
