@@ -3089,6 +3089,11 @@ function showResult(program) {
         <button onclick="copyProgram()">
             📋 Копировать программу
         </button>
+        <br><br>
+
+        <button onclick="saveNC()">
+            💾 СОХРАНИТЬ NC
+        </button>
     `;
 }
 
@@ -3118,6 +3123,35 @@ function copyProgram() {
                 "Выделите программу вручную."
             );
         });
+}
+function saveNC() {
+    const output = document.getElementById("programOutput");
+
+    if (!output || !output.value.trim()) {
+        alert("Сначала создайте программу.");
+        return;
+    }
+
+    const program = output.value;
+
+    const match = program.match(/\bO(\d+)\b/);
+    const fileName = match ? `O${match[1]}.NC` : "PROGRAM.NC";
+
+    const blob = new Blob([program], {
+        type: "text/plain;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function copyGroovingProgram() {
 
