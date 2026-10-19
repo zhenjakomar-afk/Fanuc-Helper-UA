@@ -136,27 +136,42 @@ function showPage(page) {
 
 <br><br>
 
-<label>Координата угла X (диаметр, мм)</label>
+<label>Начальная координата X (диаметр, мм)</label>
 <br>
 <input type="number" id="radiusX" step="any">
 
 <br><br>
 
-<label>Координата угла Z (мм)</label>
+<label>Начальная координата Z (мм)</label>
 <br>
 <input type="number" id="radiusZ" step="any">
 
 <br><br>
 
-<label>Расположение радиуса</label>
+<label>Конечная координата X (диаметр, мм)</label>
 <br>
-<select id="radiusPosition">
-    <option value="1">X увеличивается, Z увеличивается</option>
-    <option value="2">X увеличивается, Z уменьшается</option>
-    <option value="3">X уменьшается, Z увеличивается</option>
-    <option value="4">X уменьшается, Z уменьшается</option>
+<input type="number" id="radiusTargetX" step="any">
+<br><br>
+
+<label>Конечная координата Z (мм)</label>
+<br>
+<input type="number" id="radiusTargetZ" step="any">
+<br><br>
+
+<label>Направление дуги</label>
+<br>
+
+<select id="radiusDirection">
+    <option value="G02">G02 — по часовой стрелке</option>
+    <option value="G03">G03 — против часовой стрелки</option>
 </select>
 
+<br><br>
+
+<label>Угол дуги (°)</label>
+<br>
+<input type="number" id="radiusAngle" step="any"
+       placeholder="90° или оставить пустым">
 <br><br>
 
 <button onclick="calculateRadius()">
@@ -292,12 +307,25 @@ function calculateRadius() {
     const X = Number(document.getElementById("radiusX").value);
     const Z = Number(document.getElementById("radiusZ").value);
 
-    const position = document.getElementById("radiusPosition").value;
-
     const rField = document.getElementById("radiusR");
     const xField = document.getElementById("radiusX");
     const zField = document.getElementById("radiusZ");
 
+const targetXField = document.getElementById("radiusTargetX");
+const targetZField = document.getElementById("radiusTargetZ");
+
+const targetXText = targetXField.value.trim();
+const targetZText = targetZField.value.trim();
+
+const targetX = targetXText === "" ? null : Number(targetXText);
+const targetZ = targetZText === "" ? null : Number(targetZText);
+   
+    const angleField = document.getElementById("radiusAngle");
+
+    const angle = angleField.value.trim() === ""
+    ? 90
+    : Number(angleField.value);
+   
     if (
         rField.value.trim() === "" ||
         xField.value.trim() === "" ||
@@ -305,7 +333,10 @@ function calculateRadius() {
         !Number.isFinite(R) ||
         !Number.isFinite(X) ||
         !Number.isFinite(Z) ||
-        R <= 0
+        R <= 0 ||
+        !Number.isFinite(angle) ||
+        angle <= 0 ||
+        angle > 90
     ) {
         alert("Введите корректные значения R, X и Z.");
         return;
@@ -323,8 +354,10 @@ function calculateRadius() {
     }
 
     // X программируется в диаметрах
-    const deltaX = 2 * R * directionX;
-    const deltaZ = R * directionZ;
+    const radians = angle * Math.PI / 180;
+
+    const deltaX = 2 * R * Math.sin(radians) * directionX;
+    const deltaZ = R * (1 - Math.cos(radians)) * directionZ;
 
     // Начало дуги на поверхности вдоль Z
     const startX = X;
