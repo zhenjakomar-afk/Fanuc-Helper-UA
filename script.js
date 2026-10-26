@@ -365,11 +365,16 @@ const chord = 2 * R * Math.sin(radians / 2);
 
     const dz = Math.sqrt(Math.max(0, square));
     endZ = startZ - dz;
-alert(
-    "Возможные конечные координаты Z:\n" +
-    "Z" + (startZ - dz).toFixed(3) + "\n" +
-    "Z" + (startZ + dz).toFixed(3)
-);
+      
+      document.getElementById("radiusVariants").innerHTML =
+  "<p>Выберите конечную координату Z:</p>" +
+  "<button onclick=\"document.getElementById('radiusEndZ').value='" +
+  (startZ - dz).toFixed(3) + "'\">Z" +
+  (startZ - dz).toFixed(3) + "</button> " +
+  "<button onclick=\"document.getElementById('radiusEndZ').value='" +
+  (startZ + dz).toFixed(3) + "'\">Z" +
+  (startZ + dz).toFixed(3) + "</button>";
+      
   } 
    if (endX === null && endZ !== null) {
     const dz = endZ - startZ;
