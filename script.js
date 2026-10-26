@@ -388,11 +388,15 @@ const chord = 2 * R * Math.sin(radians / 2);
     const dx = 2 * Math.sqrt(Math.max(0, square));
     endX = startX + dx;
 
-    alert(
-        "Возможные конечные координаты X:\n" +
-        "X" + (startX + dx).toFixed(3) + "\n" +
-        "X" + (startX - dx).toFixed(3)
-    );
+    document.getElementById("radiusVariants").innerHTML =
+  "<p>Выберите конечную координату X:</p>" +
+  "<button onclick=\"document.getElementById('radiusEndX').value='" +
+  (startX + dx).toFixed(3) + "'\">X" +
+  (startX + dx).toFixed(3) + "</button> " +
+  "<button onclick=\"document.getElementById('radiusEndX').value='" +
+  (startX - dx).toFixed(3) + "'\">X" +
+  (startX - dx).toFixed(3) + "</button>";
+      
    }
    document.getElementById("radiusStartX").value =
         startX.toFixed(3);
@@ -400,11 +404,16 @@ const chord = 2 * R * Math.sin(radians / 2);
     document.getElementById("radiusStartZ").value =
         startZ.toFixed(3);
 
-    document.getElementById("radiusEndX").value =
-        endX.toFixed(3);
+    if (targetX !== null) {
+  document.getElementById("radiusEndX").value =
+    endX.toFixed(3);
+}
 
-    document.getElementById("radiusEndZ").value =
-        endZ.toFixed(3);
+if (targetZ !== null) {
+  document.getElementById("radiusEndZ").value =
+    endZ.toFixed(3);
+}
+   
 }
     function showGrooving() {
 
