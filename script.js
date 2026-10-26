@@ -177,7 +177,7 @@ function showPage(page) {
 <button onclick="calculateRadius()">
     РАССЧИТАТЬ
 </button>
-
+<div id="radiusVariants"></div>
 <br><br>
 
 <label>Начало дуги X</label>
@@ -311,14 +311,14 @@ function calculateRadius() {
     const xField = document.getElementById("radiusX");
     const zField = document.getElementById("radiusZ");
 
-const targetXField = document.getElementById("radiusTargetX");
-const targetZField = document.getElementById("radiusTargetZ");
+    const targetXField = document.getElementById("radiusTargetX");
+    const targetZField = document.getElementById("radiusTargetZ");
 
-const targetXText = targetXField.value.trim();
-const targetZText = targetZField.value.trim();
+    const targetXText = targetXField.value.trim();
+    const targetZText = targetZField.value.trim();
 
-const targetX = targetXText === "" ? null : Number(targetXText);
-const targetZ = targetZText === "" ? null : Number(targetZText);
+    const targetX = targetXText === "" ? null : Number(targetXText);
+    const targetZ = targetZText === "" ? null : Number(targetZText);
    
     const angleField = document.getElementById("radiusAngle");
 
@@ -336,38 +336,60 @@ const targetZ = targetZText === "" ? null : Number(targetZText);
         R <= 0 ||
         !Number.isFinite(angle) ||
         angle <= 0 ||
-        angle > 90
+        angle >= 360 ||
+        (targetX === null && targetZ === null) ||
+        (targetX !== null && !Number.isFinite(targetX)) ||
+        (targetZ !== null && !Number.isFinite(targetZ))
     ) {
         alert("Введите корректные значения R, X и Z.");
         return;
     }
 
-    let directionX = 1;
-    let directionZ = 1;
+   const startX = X;
+const startZ = Z;
 
-    if (position === "2") directionZ = -1;
-    if (position === "3") directionX = -1;
+let endX = targetX;
+let endZ = targetZ;
+   const arcDirection = document.getElementById("radiusDirection").value;
+   const radians = angle * Math.PI / 180;
+const chord = 2 * R * Math.sin(radians / 2);
+ 
+   if (endZ === null && endX !== null) {
+    const dx = (endX - startX) / 2;
+    const square = chord * chord - dx * dx;
 
-    if (position === "4") {
-        directionX = -1;
-        directionZ = -1;
+    if (square < -1e-9) {
+        alert("При таком радиусе и угле дуга невозможна");
+        return;
     }
 
-    // X программируется в диаметрах
-    const radians = angle * Math.PI / 180;
+    const dz = Math.sqrt(Math.max(0, square));
+    endZ = startZ - dz;
+alert(
+    "Возможные конечные координаты Z:\n" +
+    "Z" + (startZ - dz).toFixed(3) + "\n" +
+    "Z" + (startZ + dz).toFixed(3)
+);
+  } 
+   if (endX === null && endZ !== null) {
+    const dz = endZ - startZ;
+    const square = chord * chord - dz * dz;
 
-    const deltaX = 2 * R * Math.sin(radians) * directionX;
-    const deltaZ = R * (1 - Math.cos(radians)) * directionZ;
+    if (square < -1e-9) {
+        alert("При таком радиусе и угле дуга невозможна");
+        return;
+    }
 
-    // Начало дуги на поверхности вдоль Z
-    const startX = X;
-    const startZ = Z + deltaZ;
+    const dx = 2 * Math.sqrt(Math.max(0, square));
+    endX = startX + dx;
 
-    // Конец дуги на поверхности вдоль X
-    const endX = X + deltaX;
-    const endZ = Z;
-
-    document.getElementById("radiusStartX").value =
+    alert(
+        "Возможные конечные координаты X:\n" +
+        "X" + (startX + dx).toFixed(3) + "\n" +
+        "X" + (startX - dx).toFixed(3)
+    );
+   }
+   document.getElementById("radiusStartX").value =
         startX.toFixed(3);
 
     document.getElementById("radiusStartZ").value =
